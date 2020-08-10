@@ -84,12 +84,14 @@ abstract class AddressBookManager {
         System.err.println("SAISIE OBLIGATOIRE!");
     }
     
+    // Printing search result message
     static void printSearchResult() {
-        System.out.println("Search Result:");
+        System.out.println("RESULTAT DE LA RECHERCHE :");
     }
     
+    // Printing contact not found message
     static void printContactNotFound() {
-        System.out.println("Contact not found!");
+        System.out.println("CONTACT INTROUVABLE !");
     }
     
      static void printModifyDetails() {
@@ -162,32 +164,10 @@ abstract class AddressBookManager {
             + "3. Sort by contact type");
     }
     
-    static int enterId() throws IOException {
-        System.out.println("Enter ID:");
-        String idEntered = "";
-        boolean incorrect = true;
-        boolean condition;
-        while (incorrect) {
-            String id = readString(); 
-            if ("".equals(id)) idEntered = "";
-            else {
-                condition = containsDigitsOnly(id);
-                if (condition == false) 
-                    printErrorMessage();                  
-                else {
-                    idEntered = id;
-                    incorrect = false;
-                }
-            }
-        }
-        
-        incorrect = true;
-        while (incorrect) {
-            if (Integer.parseInt(idEntered) > 
-                getAddressBook().size()) printErrorMessage();
-            else incorrect = false;
-        }
-        return Integer.parseInt(idEntered);
+    // Prompting for ID
+    static String promptID() throws IOException {
+        System.out.println("SAISIR LE NUMERO D'ID :");
+        return readString();
     }
     
     // Prompting for first name

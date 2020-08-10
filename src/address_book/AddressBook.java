@@ -8,6 +8,8 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ADDRESS BOOK CLASS
@@ -26,6 +28,18 @@ final class AddressBook {
         addressBook.add(contact);
     }
     
+    // Initialization block
+    static 
+    {
+        printWelcome();
+        try {
+            openAddressBook();
+        } catch (IOException ex) {
+            Logger.getLogger(AddressBook.class.getName()).log(Level.SEVERE, 
+            null, ex);
+        }
+    }
+    
     /**
      * Opening the address book
      * This method allows for adding contacts, searching for contacts, 
@@ -33,7 +47,6 @@ final class AddressBook {
      * @throws IOException
      */
     static void openAddressBook() throws IOException {
-        printWelcome();
         printSelectUpToFour();
          
         switch (restrictUpToFour()) {
@@ -141,30 +154,35 @@ final class AddressBook {
     
     /**
      * Searching for contacts
-     * @param lastNameEntered, the last name entered for search by user
+     * @param lastName, the last name entered for search by user
      * @throws java.io.IOException
      */
-    private static void findContact(String lastNameEntered) throws IOException
+    private static void findContact(String lastName) throws IOException
     {
         int count = 0;
-        int id = 0;
+        int index = 0;
+        String id = "";
         printSearchResult();
        
-        for(int i = 0; i < AddressBook.getAddressBook().size(); i++) { 
-            if (lastNameEntered.equals(AddressBook.getAddressBook().get(i).
-                getLastName())) { 
-                System.out.println(AddressBook.getAddressBook().get(i).
-                    toString());
+        for (int i = 0; i < addressBook.size(); i++) { 
+            if (lastName.equals(addressBook.get(i).getLastName())) { 
+                System.out.println(addressBook.get(i).toString());
+                index = i;
                 count++;
             }
         }
         
-        if (count == 0) printContactNotFound();
-        else if (count > 1) id = enterId();
-        int index = 0;
-        for(int i = 0; i < AddressBook.getAddressBook().size(); i++) { 
-            if (AddressBook.getAddressBook().get(i).getId() == id) { 
-                index = i;
+        if (count == 0) {
+            printContactNotFound();
+            openAddressBook();
+        }
+        else if (count > 1) {
+            promptID();
+            id = controlID(promptID());
+            for(int i = 0; i < addressBook.size(); i++) { 
+                if (id.equals(addressBook.get(i).getId())) { 
+                    index = i;
+                }
             }
         }
               
@@ -694,6 +712,21 @@ final class AddressBook {
         return email;
     }
     
+    static String controlID(String id) throws IOException {
+        // Setting ID to contain digits only
+        boolean incorrect = true;
+        boolean condition;
+        condition = "".equals(id) || id == null || containsDigitsOnly(id) == 
+            false;
+
+            while (incorrect) {            
+                if (condition) { 
+                    printErrorMessage();
+                    id = promptID();
+                } else incorrect = false;
+            }
+        return id;
+    }
     static boolean isDateValid(String dateEntered) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd mm "

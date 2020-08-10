@@ -4,7 +4,6 @@
  */
 package address_book;
 
-import static address_book.AddressBook.openAddressBook;
 import java.io.IOException;
 
 /**
@@ -20,8 +19,10 @@ public class AddressBookTest {
      * Testing functionality 
      * @param args the command line argument
      * @throws IOException
+     * @throws java.lang.ClassNotFoundException
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, 
+        ClassNotFoundException {
         // Hard coding contacts
         Contact beyonce = new Acquaintance("Beyoncé", "Carter", "38", "bis",
                 "Rue de la Pêche", "Bat. B", "95100", "Argenteuil",
@@ -53,6 +54,6 @@ public class AddressBookTest {
         addressBook = new AddressBook(herb);
         addressBook = new AddressBook(toby);
 
-        openAddressBook();
+        Class.forName("address_book.AddressBook");
     }
 }
