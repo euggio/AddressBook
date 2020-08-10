@@ -4,6 +4,8 @@
  */
 package address_book;
 
+import java.io.IOException;
+
 /**
  * FAMILY CLASS
  * One of the three subclasses of Contact class
@@ -30,9 +32,10 @@ public class Family extends Contact {
      * @see Contact superclass for more information 
      */
     public Family(String firstName, String lastName, String birthdate, 
-            String streetNumber, String streetNumberSuffix, String streetName, 
-            String streetNameSuffix, String postalCode, String city, 
-            String email, String landlinePhone, String mobilePhone) {
+        String streetNumber, String streetNumberSuffix, String streetName, 
+        String streetNameSuffix, String postalCode, String city, 
+        String email, String landlinePhone, String mobilePhone) 
+        throws IOException {
         super(firstName, lastName, birthdate, streetNumber, streetNameSuffix, 
             streetName, streetNameSuffix, postalCode, city, email, 
             landlinePhone, mobilePhone);

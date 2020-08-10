@@ -12,8 +12,8 @@ import java.util.Objects;
  * CONTACT CLASS
  * Used as super class for the Acquaintance class, the Family class, and the 
  * Friend class.
- * The first name, the last name, and the landline phone are mandatory 
- * informations for a contact
+ * The first name and the last name, as well as the landline phone, are 
+ * mandatory informations for a contact
  * @author euggio
  */
 public class Contact {

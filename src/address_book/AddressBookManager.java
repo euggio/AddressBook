@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 
 /**
  * ADDRESS BOOK MANAGER CLASS
- * This address book manager class holds console inputs in the address book's
+ * The address book manager class holds console inputs in the address book's
  * stead 
  * @author euggio
  */

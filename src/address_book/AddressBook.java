@@ -11,7 +11,8 @@ import java.util.Comparator;
 
 /**
  * ADDRESS BOOK CLASS
- * This address book class adds, finds, modifies, and removes contacts.
+ * This address book class holds French contacts and adds, finds, modifies, and 
+ * also removes contacts.
  * It allows user to add same contact as many times as s/he wishes to
  * @author euggio
  */

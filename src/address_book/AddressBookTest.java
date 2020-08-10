@@ -10,8 +10,8 @@ import java.io.IOException;
 /**
  * CONTACT CLASS TEST
  * Tests the functionality of the address book class, the address book manager
- * class, along with the Acquaintance class, the Family class, and the 
- * Friend class, which are inherited from the Contact class
+ * class, along with the Acquaintance class, the Family class, and the Friend 
+ * class, which are inherited from the Contact class
  * @author cda606
  */
 public class AddressBookTest {

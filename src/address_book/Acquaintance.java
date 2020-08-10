@@ -4,6 +4,8 @@
  */
 package address_book;
 
+import java.io.IOException;
+
 /**
  * ACQUAINTANCE CLASS
  * One of the three subclasses of Contact class.
@@ -26,11 +28,13 @@ public class Acquaintance extends Contact {
      * @param city, a city 
      * @param email, an email address 
      * @param landlinePhone, a landline phone number 
+     * @throws java.io.IOException 
      * @see Contact superclass for more information 
      */
     public Acquaintance(String firstName, String lastName, String streetNumber, 
         String streetNumberSuffix, String streetName, String streetNameSuffix, 
-        String postalCode, String city, String email, String landlinePhone) {       
+        String postalCode, String city, String email, String landlinePhone) 
+        throws IOException {       
         super(firstName, lastName, streetNumber, streetNumberSuffix, streetName,
             streetNameSuffix, postalCode, city, email, landlinePhone);
     }
