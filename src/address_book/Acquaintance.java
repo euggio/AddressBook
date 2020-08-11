@@ -8,15 +8,18 @@ import java.io.IOException;
 
 /**
  * ACQUAINTANCE CLASS
- * One of the three subclasses of Contact class.
+ * One of the three subclasses of Contact class; that is an acquaintance is a 
+ * contact.
  * It contains all superclass's fields but the birthdate and the mobile phone 
  * fields, which are valued as "N/A" in superclass's reserved constructor 
+ * @see Contact superclass for more information
  * @author euggio
  */
-public class Acquaintance extends Contact {
+class Acquaintance extends Contact {
 // ------------------------------ CONSTRUCTOR (1) ------------------------------
     /**
-     * Constructor initializing the corresponding superclass's constructor
+     * Constructor initializing the corresponding superclass's reserved 
+     * constructor
      * @param firstName, a first name 
      * @param lastName, a last name 
      * @param streetNumber, a street number 
@@ -31,7 +34,7 @@ public class Acquaintance extends Contact {
      * @throws java.io.IOException 
      * @see Contact superclass for more information 
      */
-    public Acquaintance(String firstName, String lastName, String streetNumber, 
+    Acquaintance(String firstName, String lastName, String streetNumber, 
         String streetNumberSuffix, String streetName, String streetNameSuffix, 
         String postalCode, String city, String email, String landlinePhone) 
         throws IOException {       

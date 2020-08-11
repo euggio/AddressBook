@@ -8,15 +8,16 @@ import java.io.IOException;
 
 /**
  * FAMILY CLASS
- * One of the three subclasses of Contact class
- * It contains all of superclass's fields and is different to super only by type
- * name
+ * One of the three subclasses of Contact class; that is, a family is a contact.
+ * It contains all of superclass's fields and is different to superclass only by
+ * type name
  * @author euggio
  */
-public class Family extends Contact {
+class Family extends Contact {
 // ------------------------------ CONSTRUCTOR (1) ------------------------------
     /**
-     * Constructor initializing the corresponding superclass's constructor
+     * Constructor initializing the corresponding superclass's reserved 
+     * constructor
      * @param firstName, a first name 
      * @param lastName, a last name 
      * @param birthdate, a birthdate 
@@ -31,7 +32,7 @@ public class Family extends Contact {
      * @param mobilePhone, a mobile phone number  
      * @see Contact superclass for more information 
      */
-    public Family(String firstName, String lastName, String birthdate, 
+    Family(String firstName, String lastName, String birthdate, 
         String streetNumber, String streetNumberSuffix, String streetName, 
         String streetNameSuffix, String postalCode, String city, 
         String email, String landlinePhone, String mobilePhone) 

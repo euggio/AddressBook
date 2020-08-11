@@ -162,23 +162,29 @@ final class AddressBook {
         int count = 0;
         int index = 0;
         String id = "";
+        ArrayList<Integer> indexes = new ArrayList<>();
         printSearchResult();
-       
+        
+        // Displaying contacts, retrieving index and counting duplicates
         for (int i = 0; i < addressBook.size(); i++) { 
             if (lastName.equals(addressBook.get(i).getLastName())) { 
                 System.out.println(addressBook.get(i).toString());
                 index = i;
+                indexes.add(i);
                 count++;
             }
         }
         
+        // Actions taken when contact is not found and when duplicates are found 
         if (count == 0) {
             printContactNotFound();
             openAddressBook();
         }
         else if (count > 1) {
-            promptID();
-            id = controlID(promptID());
+            promptID(); // Asking for ID when duplicates are found
+            // Checking whether ID is contained in arraylist indexes
+            id = controlID(promptID(), indexes); 
+            // Retrieving index from ID
             for(int i = 0; i < addressBook.size(); i++) { 
                 if (id.equals(addressBook.get(i).getId())) { 
                     index = i;
@@ -186,10 +192,10 @@ final class AddressBook {
             }
         }
               
+        // Modify details based on type
         printModifyDetails();
-        
-        if ("Acquaintance".equals(AddressBook.getAddressBook().get(index).
-            getClass().getSimpleName())) {
+        if ("Acquaintance".equals(addressBook.get(index).getClass().
+            getSimpleName())) {
             modifyAcquaintance();
             switch(restrictUpToTen()) {
                 case 1:
@@ -261,7 +267,7 @@ final class AddressBook {
                     modifyLandlinePhone(index);
                     break;
                 case 12:
-                    modifyFamilyMobile(index);
+                    modifyMobilePhone(index);
                     break;
             }
         } else {
@@ -298,7 +304,7 @@ final class AddressBook {
                     modifyLandlinePhone(index);
                     break;
                 case 11:
-                    modifyFriendMobile(index);
+                    modifyMobilePhone(index);
                     break;
             }
         }
@@ -712,15 +718,16 @@ final class AddressBook {
         return email;
     }
     
-    static String controlID(String id) throws IOException {
-        // Setting ID to contain digits only
+    static String controlID(String id, ArrayList<Integer> indexes) 
+        throws IOException {
+        // Setting ID to contain digits only among specific ID's
         boolean incorrect = true;
         boolean condition;
-        condition = "".equals(id) || id == null || containsDigitsOnly(id) == 
-            false;
+        condition = indexes.contains(id) && (!"".equals(id) || id != null || 
+            containsDigitsOnly(id) == true);
 
             while (incorrect) {            
-                if (condition) { 
+                if (!condition) { 
                     printErrorMessage();
                     id = promptID();
                 } else incorrect = false;

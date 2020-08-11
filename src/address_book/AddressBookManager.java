@@ -20,12 +20,12 @@ abstract class AddressBookManager {
     // Printing Welcome message
     static void printWelcome() {
         System.out.println(
-            "================================================================\n"
-          + "================================================================\n"
-          + "========================= CARNET ===============================\n"
-          + "============================== D'ADRESSE =======================\n"
-          + "================================================================\n"
-          + "================================================================");
+          "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+        + "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+        + "::::::::::::::::::::::::: CARNET :::::::::::::::::::::::::::::::::\n"
+        + ":::::::::::::::::::::::::::::: D'ADRESSE :::::::::::::::::::::::::\n"
+        + "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
+        + "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
     }
     
     // Printing two numbers to choose from
@@ -94,8 +94,9 @@ abstract class AddressBookManager {
         System.out.println("CONTACT INTROUVABLE !");
     }
     
+    // Printing modify details
      static void printModifyDetails() {
-        System.out.println("Do you want to modify the contact's details?");
+        System.out.println("MODIFIER DES INFORMATIONS ?");
     }
     
     // Printing success message on adding an acquaintance
@@ -248,108 +249,119 @@ abstract class AddressBookManager {
         return readString();
     }
     
+    // Printing Acquaintance details to modify
     static void modifyAcquaintance() {
-        System.out.println("Choose either 1, 2, ..., or 10:");
-        System.out.println("1. Modify first name  2. Modify last name  \n"
-              + "3. Modify street number  4. Modify street number suffix  \n"
-              + "5. Modify street name  6. Modify street name suffix  \n"
-              + "7. Modify postal code  8. Modify city  \n"
-              + "9. Modify email  10. Modify landline phone number  \n");
+        System.out.println("SAISIR 1, 2, ..., OU 10 :");
+        System.out.println("1. MODIFIER LE PRENOM  2. MODIFIER LE NOM\n"
+            + "3. MODIFIER LE NUMERO DE RUE  4. MODIFIER LE COMPLEMENT DU "
+            + "NUMERO DE RUE\n"
+            + "5. MODIFIER LE NOM DE RUE  6. MODIFIER LE COMPLEMENT DE RUE\n"
+            + "7. MODIFIER LE CODE POSTAL  8. MODIFIER LA VILLE\n"
+            + "9. MODIFIER L'E-MAIL  10. MODIFIER LE NUMERO DE TELEPHONE FIXE"
+            + "\n");
     }
     
+    // Printing Friend details to modify
     static void modifyFriend() {
-        System.out.println("Choose either 1, 2, ..., or 11:");
-        System.out.println("1. Modify first name  2. Modify last name  \n"
-              + "3. Modify street number  4. Modify street number suffix  \n"
-              + "5. Modify street name  6. Modify street name suffix  \n"
-              + "7. Modify postal code  8. Modify city  \n"
-              + "9. Modify email  10. Modify landline phone number  \n"
-              + "11. Modify mobile phone number");
+        System.out.println("SAISIR 1, 2, ..., OU 11 :");
+        System.out.println("1. MODIFIER LE PRENOM  2. MODIFIER LE NOM\n"
+            + "3. MODIFIER LE NUMERO DE RUE  4. MODIFIER LE COMPLEMENT DU "
+            + "NUMERO DE RUE\n"
+            + "5. MODIFIER LE NOM DE RUE  6. MODIFIER LE COMPLEMENT DE RUE\n"
+            + "7. MODIFIER LE CODE POSTAL  8. MODIFIER LA VILLE\n"
+            + "9. MODIFIER L'E-MAIL  10. MODIFIER LE NUMERO DE TELEPHONE FIXE\n"
+            + "11. MODIFIER LE NUMERO DE TELEPHONE MOBILE");
     }
     
+    // Printing Family details to modify
     static void modifyFamily() {
-        System.out.println("Choose either 1, 2, ..., or 12:");
-        System.out.println("1. Modify first name  2. Modify last name  \n"
-            + "3. Modify birthdate  4. Modify street number  \n"
-            + "5. Modify street number suffix  6. Modify street name  \n"
-            + "7. Modify street name suffix  8. Modify postal code  \n"
-            + "9. Modify city  10. Modify email  \n"
-            + "11. Modify landline phone number  \n"
-            + "12. Modify mobile phone number");
+        System.out.println("SAISIR 1, 2, ..., OU 12 :");
+        System.out.println("1. MODIFIER LE PRENOM  2. MODIFIER LE NOM\n"
+            + "3. MODIFIER LA DATE DE NAISSANCE  4. MODIFIER LE NUMERO DE RUE\n"
+            + "5. MODIFIER LE COMPLEMENT DU NUMERO DE RUE  6. MODIFIER LE NOM "
+            + "DE RUE\n"
+            + "7. MODIFIER LE COMPLEMENT DE RUE  8. MODIFIER LE CODE POSTAL\n"
+            + "9. MODIFIER LA VILLE  10. MODIFIER L'E-MAIL\n"
+            + "11. MODIFIER LE NUMERO DE TELEPHONE FIXE  12. MODIFIER LE NUMERO"
+            + " DE TELEPHONE MOBILE");
     }
     
+    // Modifying first name
     static void modifyFirstName(int index) throws IOException {
-        System.out.println("Modify first name:");
+        System.out.println("MODIFIER LE PRENOM :");
         getAddressBook().get(index).setFirstName(readString());
     }
     
+    // Modifying last name
     static void modifyLastName(int index) throws IOException {
-        System.out.println("Modify last name:");
+        System.out.println("MODIFIER LE NOM :");
         getAddressBook().get(index).setLastName(readString());
     }
     
+    // Modifying birthdate
     static void modifyBirthDate(int index) throws IOException {
-        System.out.println("Modify birthdate:");
-        Family family = (Family) getAddressBook().get(index);
-        family.setBirthDate(readString());
+        System.out.println("MODIFIER LA DATE DE NAISSANCE :");
+        getAddressBook().get(index).setBirthdate(readString());
     }
     
-    static void modifyAddress() {
-        System.out.println("Modify address:");
+    // Printing "modify address"
+    static void printModifyAddress() {
+        System.out.println("MODIFIER L'ADRESSE :");
     }
     
+    // Modifying street number
     static void modifyStreetNumber(int index) throws IOException {
-        System.out.println("Modify street number:");
+        System.out.println("MODIFIER LE NUMERO DE RUE :");
         getAddressBook().get(index).setStreetNumber(readString());
     }
     
+    // Modifying street number suffix
     static void modifyStreetNumberSuffix(int index) throws IOException {
-        System.out.println("Modify street number suffix:");
-        getAddressBook().get(index).setStreetNumberSuffix(
-            readString());
+        System.out.println("MODIFIER LE COMPLEMENT DU NUMERO DE RUE :");
+        getAddressBook().get(index).setStreetNumberSuffix(readString());
     }
     
+    // Modifying street name
     static void modifyStreetName(int index) throws IOException {
-        System.out.println("Modify street name:");
+        System.out.println("MODIFIER LE NOM DE RUE :");
         getAddressBook().get(index).setStreetName(readString());
     }
     
+    // Modifying street name suffix
     static void modifyStreetNameSuffix(int index) throws IOException {
-        System.out.println("Modify street name suffix:");
+        System.out.println("MODIFIER LE COMPLEMENT DE RUE :");
         getAddressBook().get(index).setStreetNameSuffix(
             readString());
     } 
     
+    // Modifying postal code
     static void modifyPostalCode(int index) throws IOException {
-        System.out.println("Modify postal code:");
+        System.out.println("MODIFIER LE CODE POSTAL :");
         getAddressBook().get(index).setPostalCode(readString());
     }
     
+    // Modifying city name
     static void modifyCity(int index) throws IOException {
-        System.out.println("Modify city:");
+        System.out.println("MODIFIER LA VILLE :");
         getAddressBook().get(index).setCity(readString());
     }
     
+    // Modifying email address
     static void modifyEmail(int index) throws IOException {
-        System.out.println("Modify email address:");
+        System.out.println("MODIFIER L'E-MAIL :");
         getAddressBook().get(index).setEmail(readString());
     }
     
+    // Modifying landline phone number
     static void modifyLandlinePhone(int index) throws IOException {
-        System.out.println("Modify landline phone number:");
+        System.out.println("MODIFIER LE NUMERO DE TELEPHONE FIXE :");
         getAddressBook().get(index).setLandlinePhone(readString());
     }
     
-    static void modifyFamilyMobile(int index) throws IOException {
-        System.out.println("Modify mobile phone number:");
-        Family family = (Family) getAddressBook().get(index);
-        family.setMobilePhone(readString());
-    }
-    
-    static void modifyFriendMobile(int index) throws IOException {
-        System.out.println("Modify mobile phone number:");
-        Friend friend = (Friend) getAddressBook().get(index);
-        friend.setMobilePhone(readString());
+    // Modifying mobile phone number
+    static void modifyMobilePhone(int index) throws IOException {
+        System.out.println("MODIFIER LE NUMERO DE TELEPHONE MOBILE :");
+        getAddressBook().get(index).setMobilePhone(readString());
     }
     
     static String readString() throws IOException {

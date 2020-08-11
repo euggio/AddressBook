@@ -10,18 +10,19 @@ import java.util.Objects;
 
 /**
  * CONTACT CLASS
- * Used as super class for the Acquaintance class, the Family class, and the 
+ * Used as superclass for the Acquaintance class, the Family class, and the 
  * Friend class.
  * The first name and the last name, as well as the landline phone, are 
- * mandatory informations for a contact
+ * mandatory informations for a contact.
+ * Postal codes, as well as phone numbers are implemented as French objects
  * @author euggio
  */
-public class Contact {
+class Contact {
 // -------------------------- CONSTRUCTORS (3) ---------------------------------
     /**
      * This constructor takes as parameters variables corresponding to all 
      * instance fields, except for the birthdate, mobile phone, and id fields.
-     * It works as a base constructor for the Acquaintance subclass
+     * It works as a base constructor reserved for the Acquaintance subclass
      * @param firstName, a first name 
      * @param lastName, a last name 
      * @param streetNumber, a street number 
@@ -31,19 +32,15 @@ public class Contact {
      * and/or apartment number, etc.
      * @param postalCode, a postal code or zip code 
      * @param city, a city 
-     * @param email, an controlEmail address 
-     * @param landlinePhone, a landline controlPhone number
+     * @param email, an email address 
+     * @param landlinePhone, a landline phone number
      * @see Acquaintance subclass for more information
      */
     Contact(String firstName, String lastName, String streetNumber, 
         String streetNumberSuffix, String streetName, String streetNameSuffix, 
         String postalCode, String city, String email, String landlinePhone) 
             throws IOException { 
-        
-        // Empty strings are here translated to Unknown since user is allowed to
-        // enter empty inputs as s/he is either not concerned with or not 
-        // willing to provide corresponding details, except for mandatory 
-        // details, such as first names, last names, and landline phone numbers        
+                
         this.firstName = controlMandatoryFirstName(firstName);
         this.lastName = controlMandatoryLastName(lastName);        
         this.birthdate = "N/A"; // Not Applicable as to the Acquaintance class
@@ -74,7 +71,7 @@ public class Contact {
     /**
      * This constructor takes as parameters variables corresponding to all 
      * instance fields, except for the birthdate and id fields.
-     * It works as a base constructor for the Friend subclass
+     * It works as a base constructor reserved for the Friend subclass
      * @param firstName, a first name 
      * @param lastName, a last name 
      * @param streetNumber, a street number 
@@ -84,9 +81,9 @@ public class Contact {
      * and/or apartment number, etc.
      * @param postalCode, a postal code or zip code 
      * @param city, a city 
-     * @param email, an controlEmail address 
-     * @param landlinePhone, a landline controlPhone number
-     * @param mobilePhone, a mobile controlPhone number
+     * @param email, an email address 
+     * @param landlinePhone, a landline phone number
+     * @param mobilePhone, a mobile phone number
      * @see Friend subclass for more information
      */
     Contact(String firstName, String lastName, String streetNumber, 
@@ -94,10 +91,9 @@ public class Contact {
         String postalCode, String city, String email, String landlinePhone, 
         String mobilePhone) throws IOException { 
         
-        // Empty strings are here translated to Unknown since user is allowed to
-        // enter empty inputs as s/he is either not concerned with or not 
-        // willing to provide corresponding details, except for mandatory 
-        // details, such as first names, last names, and landline phone numbers
+        /// Empty strings and nulls are translated to Unknown, except for 
+        // mandatory details, such as first names, last names, and landline 
+        // phone numbers
         this.firstName = controlMandatoryFirstName(firstName);
         this.lastName = controlMandatoryLastName(lastName);
         this.birthdate = "N/A"; // Not Applicable as to the Friend subclass
@@ -128,7 +124,7 @@ public class Contact {
     /**
      * This constructor takes as parameters variables corresponding to all 
      * instance fields, except for the id field.
-     * It works as a base constructor for the Family subclass
+     * It works as a base constructor reserved for the Family subclass
      * @param firstName, a first name 
      * @param lastName, a last name 
      * @param birthdate, a birthdate
@@ -139,9 +135,9 @@ public class Contact {
      * and/or apartment number, etc.
      * @param postalCode, a postal code or zip code 
      * @param city, a city 
-     * @param email, an controlEmail address 
-     * @param landlinePhone, a landline controlPhone number
-     * @param mobilePhone, a mobile controlPhone number
+     * @param email, an email address 
+     * @param landlinePhone, a landline phone number
+     * @param mobilePhone, a mobile phone number
      * @see Family subclass for more information
      */
     Contact(String firstName, String lastName, String birthdate, 
@@ -149,10 +145,9 @@ public class Contact {
         String streetNameSuffix, String postalCode, String city, String email, 
         String landlinePhone, String mobilePhone) throws IOException { 
         
-        /// Empty strings are here translated to Unknown since user is allowed to
-        // enter empty inputs as s/he is either not concerned with or not 
-        // willing to provide corresponding details, except for mandatory 
-        // details, such as first names, last names, and landline phone numbers
+        // Empty strings and nulls are translated to Unknown, except for 
+        // mandatory details, such as first names, last names, and landline 
+        // phone numbers
         this.firstName = controlMandatoryFirstName(firstName);
         this.lastName = controlMandatoryLastName(lastName);
         this.birthdate = controlBirthdate(birthdate);
@@ -263,7 +258,7 @@ public class Contact {
      * Getting a bithdate
      * @return the birthdate
      */
-    public String getBirthdate() {
+    String getBirthdate() {
         return birthdate;
     }
     
@@ -405,7 +400,7 @@ public class Contact {
      * Setting the street number suffix 
      * @param streetNumberSuffix, the street number suffix 
      */
-    public void setStreetNumberSuffix(String streetNumberSuffix) {
+    void setStreetNumberSuffix(String streetNumberSuffix) {
         // Allowing user to enter empty string as s/he changes her/his mind
         if ("".equals(streetNumberSuffix) || streetNumberSuffix == null) this.
             streetNumberSuffix = "Unknown";
@@ -416,7 +411,7 @@ public class Contact {
      * Setting the street name 
      * @param streetName, the street name 
      */
-    public void setStreetName(String streetName) {
+    void setStreetName(String streetName) {
         // Allowing user to enter empty string as s/he changes her/his mind
         if ("".equals(streetName) || streetName == null) this.streetName = 
             "Unknown";
@@ -427,7 +422,7 @@ public class Contact {
      * Setting the street name suffix 
      * @param streetNameSuffix, the street name suffix 
      */
-    public void setStreetNameSuffix(String streetNameSuffix) {
+    void setStreetNameSuffix(String streetNameSuffix) {
         /// Allowing user to enter empty string as s/he changes her/his mind
         if ("".equals(streetNameSuffix) || streetNameSuffix == null) this.
             streetNameSuffix = "Unknown";
@@ -439,7 +434,7 @@ public class Contact {
      * @param postalCode, the postal code 
      * @throws java.io.IOException 
      */
-    public void setPostalCode(String postalCode) throws IOException {
+    void setPostalCode(String postalCode) throws IOException {
         this.postalCode = controlPostalCode(postalCode);
     }
 
@@ -447,7 +442,7 @@ public class Contact {
      * Setting the street city 
      * @param city, the city 
      */
-    public void setCity(String city) {
+    void setCity(String city) {
         // Allowing user to enter empty string as s/he changes her/his mind
         if ("".equals(city) || city == null) this.city = "Unknown";
         else this.city = city;
@@ -458,7 +453,7 @@ public class Contact {
      * @param email, an email address 
      * @throws java.io.IOException 
      */
-    public void setEmail(String email) throws IOException {
+    void setEmail(String email) throws IOException {
         this.email = controlEmail(email);
     }
 
@@ -467,7 +462,7 @@ public class Contact {
      * @param landlinePhone, a landline phone number 
      * @throws java.io.IOException 
      */
-    public void setLandlinePhone(String landlinePhone) throws IOException {
+    void setLandlinePhone(String landlinePhone) throws IOException {
         this.landlinePhone = controlMandatoryLandlinePhone(landlinePhone);
     }       
     

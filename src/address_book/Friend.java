@@ -8,15 +8,17 @@ import java.io.IOException;
 
 /**
  * FRIEND CLASS
- * One of the three subclasses of Contact class
- * It contains all of superclass's fields, but the birthdate field, which is 
- * valued as "N/A" in superclass's reserved constructor  
+ * One of the three subclasses of Contact class; that is a friend is a contact.
+ * It contains all of superclass's fields but the birthdate field, which is 
+ * valued as "N/A" in superclass's reserved constructor 
+ * @see Contact superclass for more information
  * @author euggio
  */
-public class Friend extends Contact { 
+class Friend extends Contact { 
 // ------------------------------ CONSTRUCTOR (1) ------------------------------
     /**
-     * Constructor initializing the corresponding superclass's constructor
+     * Constructor initializing the corresponding superclass's reserved 
+     * constructor
      * @param firstName, a first name 
      * @param lastName, a last name 
      * @param streetNumber, a street number  
@@ -31,7 +33,7 @@ public class Friend extends Contact {
      * @throws java.io.IOException 
      * @see Contact superclass for more information
      */
-    public Friend(String firstName, String lastName, String streetNumber, 
+    Friend(String firstName, String lastName, String streetNumber, 
         String streetNumberSuffix, String streetName, String streetNameSuffix, 
         String postalCode, String city, String email, String landlinePhone, 
         String mobilePhone) throws IOException {
