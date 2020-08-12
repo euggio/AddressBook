@@ -18,35 +18,219 @@ import java.util.logging.Logger;
  * It allows user to add same contact as many times as s/he wishes to
  * @author euggio
  */
-final class AddressBook {
+abstract class AddressBook {
+    // Getting the address book list
     /**
-     * Constructor initializing the field value
-     * Adding contact can be only done via this constructor
-     * @param contact the contact to be added 
+     * Getting default address book's details
+     * @return the address book details
      */
-    AddressBook (Contact contact) {
-        addressBook.add(contact);
+    static ArrayList<Contact> getAddressBook() {
+        return addressBook;
     }
     
-    // Initialization block
-    static 
-    {
-        printWelcome();
-        try {
-            openAddressBook();
-        } catch (IOException ex) {
-            Logger.getLogger(AddressBook.class.getName()).log(Level.SEVERE, 
-            null, ex);
+    // Enforcing mandatory nature of first name
+    static String controlMandatoryFirstName(String firstName) 
+        throws IOException {
+        // Empty string or null is not allow for this mandatory detail
+        boolean incorrect = true;
+        while (incorrect) {
+            if ("".equals(firstName) || firstName == null) {
+                printErrorMandatoryMessage();
+                firstName = promptFirstName();
+            } else incorrect = false;
         }
+        return firstName;
     }
     
+    // Enforcing mandatory nature of last name
+    static String controlMandatoryLastName(String lastName) throws IOException {
+        // Empty string or null is not allow for this mandatory detail
+        boolean incorrect = true;
+        while (incorrect) {
+            if ("".equals(lastName) || lastName == null) {
+                printErrorMandatoryMessage();
+                lastName = promptLastName();
+            } else incorrect = false;
+        }
+        return lastName;
+    }
+    
+    // Empty string or null is not allow for this mandatory detail.
+    // Setting landline phone number's first digit to be equal to 0, second 
+    // digit to be equal to 1, ..., or 5, or 8, or 9, and length to be equal
+    // to 10
+    static String controlMandatoryLandlinePhone(String landlinePhone) 
+            throws IOException {
+        boolean incorrect = true;
+        boolean condition;
+        while (incorrect) {
+            if ("".equals(landlinePhone) || landlinePhone == null) {
+                printErrorMandatoryMessage();
+                landlinePhone = promptFirstName();
+            } else {
+                incorrect = false;
+                while (incorrect) {
+                    condition = containsDigitsOnly(landlinePhone) == false && 
+                    landlinePhone.length() != 10                       || 
+                    !"0".equals(landlinePhone.substring(0, 1))         || 
+                    !"1".equals(landlinePhone.substring(1, 2))         || 
+                    !"2".equals(landlinePhone.substring(1, 2))         || 
+                    !"3".equals(landlinePhone.substring(1, 2))         || 
+                    !"4".equals(landlinePhone.substring(1, 2))         || 
+                    !"5".equals(landlinePhone.substring(1, 2))         ||
+                    !"8".equals(landlinePhone.substring(1, 2))         || 
+                    !"9".equals(landlinePhone.substring(1, 2));
+                    if (condition) {
+                        printErrorMessage();
+                        landlinePhone = promptLandlinePhone();
+                    } else incorrect = false;
+                }
+            }
+        }
+        return landlinePhone;
+    }
+    
+    // Setting mobile phone number's first digit to be equal to 0, second
+    // digit to be equal to 6 or 7, and length to be equal to 10 digits
+    static String controlMobilePhone(String mobilePhone) throws IOException {       
+        boolean incorrect = true;
+        boolean condition; 
+        if ("".equals(mobilePhone) || mobilePhone == null) mobilePhone =
+            "Unknown";
+        else {
+            while (incorrect) {
+                condition = containsDigitsOnly(mobilePhone) == false && 
+                    mobilePhone.length() != 10                       || 
+                    !"0".equals(mobilePhone.substring(0, 1))         || 
+                    !"6".equals(mobilePhone.substring(1, 2))         || 
+                    !"7".equals(mobilePhone.substring(1, 2));
+                if (condition) {
+                    printErrorMessage();
+                    mobilePhone = promptMobilePhone();
+                } else incorrect = false;
+            }
+        }
+        return mobilePhone;
+    }
+    
+    // Checking whether birthdate is valid or unknown
+    static String controlBirthdate(String birthdate) throws IOException {
+        boolean incorrect = true;
+        if ("".equals(birthdate) || birthdate == null) birthdate = "Unknown";
+        else {
+            while (incorrect) {
+                if (isDateValid(birthdate)) incorrect = false;
+                else {
+                    printErrorMessage();
+                    birthdate = promptBirthDate();
+                }
+            }
+        }
+        return birthdate;
+    }
+    
+    // Checking whether street number is valid or unknown
+    static String controlStreetNumber(String streetNumber) throws IOException {
+        // Setting street number string to contain digits only
+        boolean incorrect = true;
+        if ("".equals(streetNumber) || streetNumber == null) streetNumber =
+            "Unknown";
+        else {
+            while (incorrect) {            
+                if (containsDigitsOnly(streetNumber) == false) { 
+                    printErrorMessage();
+                    streetNumber = promptStreetNumber();
+                } else incorrect = false;
+            }
+        }
+        return streetNumber;
+    }
+    
+    // Checking whether postal code is valid or unknown
+    static String controlPostalCode(String postalCode) throws 
+        IOException {
+        // Setting postal code to contain 5 digits only
+        boolean incorrect = true;
+        if ("".equals(postalCode) || postalCode == null) postalCode = "Unknown";
+        else {
+            while (incorrect) {             
+                if (containsDigitsOnly(postalCode) == false) {
+                    printErrorMessage();  
+                    postalCode = promptPostalCode();
+                } else incorrect = false;
+            }
+        }
+        return postalCode;
+    }
+    
+    // Returning valid or unknown email address 
+    static String controlEmail(String email) throws IOException {
+        boolean incorrect = true;
+        if ("".equals(email) || email == null) email = "Unknown";
+        else {
+            while (incorrect) {
+                if (!isEmailValid(email)) {
+                    printErrorMessage();
+                    email = promptEmail();
+                } else incorrect = false;
+            }
+        }    
+        return email;
+    }
+    
+    // Retrieving first name length for table format on display
+    static String firstNameLength() {
+        int max = Integer.MIN_VALUE; 
+        for (int i = 0; i < addressBook.size(); i++) {
+            if (addressBook.get(i).getFirstName().length() > max) 
+                max = addressBook.get(i).getFirstName().length();
+        }
+        
+        if (max <= "First Name".length()) return "%-" + "First Name".length() + 
+            "s";
+        else return "%-" + max + "s";
+    }
+    
+    // Retrieving ID length for table format on display
+    static String idLength() {
+        int max = Integer.MIN_VALUE; 
+        for (int i = 0; i < addressBook.size(); i++) {
+            if (addressBook.get(i).getId() > max) 
+                max = Integer.toString(addressBook.get(i).getId()).length();
+        }
+        
+        if (max <= "ID".length()) return "%-" + "ID".length() + "s"; 
+        else return "%-" + max + "s";
+    }
+    
+    // Retrieving last name length for table format on display
+    static String lastNameLength() {
+        int max = Integer.MIN_VALUE; 
+        for (int i = 0; i < addressBook.size(); i++) {
+            if (addressBook.get(i).getLastName().length() > max) 
+                max = addressBook.get(i).getLastName().length();
+        }
+        
+        if (max <= "Last Name".length()) return "%-" + "Last Name".length() + 
+            "s";
+        else return "%-" + max + "s";
+    }
+    
+    // Starting the address book
+    static void startAddressBook() throws IOException {
+        printWelcome();
+        openAddressBook();        
+    }
+    
+// ------------------------------- PRIVATES ------------------------------------
+// --------------------- ADDRESS BOOK PRIMARY FUNCTIONS ------------------------    
     /**
      * Opening the address book
      * This method allows for adding contacts, searching for contacts, 
      * removing contacts, and displaying the address book
      * @throws IOException
      */
-    static void openAddressBook() throws IOException {
+    private static void openAddressBook() throws IOException {
         printSelectUpToFour();
          
         switch (restrictUpToFour()) {
@@ -76,10 +260,6 @@ final class AddressBook {
         printSelectUpToTwo();
         printEnterFirstDetails();
         
-        AddressBook acquaintance;
-        AddressBook family;
-        AddressBook friend;
-        
         String[] mandatoryDetails;
         String[] commonDetails;
         String mobilePhone;
@@ -92,20 +272,20 @@ final class AddressBook {
                 
                 switch (restrictUpToThree()) {
                     case 1:                        
-                        acquaintance = new AddressBook(new Acquaintance(
-                            mandatoryDetails[0], mandatoryDetails[1], "", "", 
-                            "", "", "", "", "", mandatoryDetails[2]));
+                        addressBook.add(new Acquaintance(mandatoryDetails[0], 
+                            mandatoryDetails[1], "", "", "", "", "", "", "", 
+                            mandatoryDetails[2]));
                         printAcquaintanceAdded();
                         break;
 
                     case 2:                        
-                        family = new AddressBook(new Family(mandatoryDetails[0], 
+                        addressBook.add(new Family(mandatoryDetails[0], 
                             mandatoryDetails[1], "", "", "", "", "", "", "", "",
                             mandatoryDetails[2], ""));
                         printFamilyAdded();
                         break;
                     case 3:                        
-                        friend = new AddressBook(new Friend(mandatoryDetails[0], 
+                        addressBook.add(new Friend(mandatoryDetails[0], 
                             mandatoryDetails[1], "", "", "", "", "", "", "", 
                             mandatoryDetails[2], ""));
                         printFriendAdded();
@@ -118,18 +298,18 @@ final class AddressBook {
                 printSelectContactType();
                 switch (restrictUpToThree()) {
                     case 1:
-                        acquaintance = new AddressBook(new Acquaintance(
-                            mandatoryDetails[0], mandatoryDetails[1], 
-                            commonDetails[0], commonDetails[1], 
-                            commonDetails[2], commonDetails[3], 
-                            commonDetails[4], commonDetails[5], 
-                            commonDetails[6], mandatoryDetails[2]));
+                        addressBook.add(new Acquaintance(mandatoryDetails[0], 
+                            mandatoryDetails[1], commonDetails[0], 
+                            commonDetails[1], commonDetails[2], 
+                            commonDetails[3], commonDetails[4], 
+                            commonDetails[5], commonDetails[6], 
+                            mandatoryDetails[2]));
                         printAcquaintanceAdded();
                         break;
                     case 2:
                         birthdate = controlBirthdate(promptBirthDate());
                         mobilePhone = controlMobilePhone(promptMobilePhone());
-                        family = new AddressBook(new Family(mandatoryDetails[0],
+                        addressBook.add(new Family(mandatoryDetails[0],
                             mandatoryDetails[1], birthdate, commonDetails[0], 
                             commonDetails[1], commonDetails[2], 
                             commonDetails[3], commonDetails[4], 
@@ -139,7 +319,7 @@ final class AddressBook {
                         break;
                     case 3:
                         mobilePhone = controlMobilePhone(promptMobilePhone());
-                        friend = new AddressBook(new Friend(mandatoryDetails[0], 
+                        addressBook.add(new Friend(mandatoryDetails[0], 
                             mandatoryDetails[1], commonDetails[0], 
                             commonDetails[1], commonDetails[2], 
                             commonDetails[3], commonDetails[4], 
@@ -150,6 +330,44 @@ final class AddressBook {
                 }
                 break;       
         }        
+    }
+    
+    // Exiting the address book
+    private static void closeAddressBook() {
+        System.exit(0);
+    }
+    
+    // Options for keeping address book open 
+    private static void continueAddressBook() throws IOException {
+        printExitMessage();
+        printSelectUpToTwo();
+        printYesOrNo();
+        
+        switch (restrictUpToTwo()) {
+            case 1:
+                closeAddressBook();
+                break;
+            case 2:
+                openAddressBook();
+                break;
+        }
+    }
+    
+    // Displaying contacts' details or address book
+    private static void displayContact() throws IOException {
+        printDisplayMethod();
+        
+        switch (restrictUpToThree()) {
+            case 1:
+                sortByLastName();
+                break;
+            case 2:
+                sortByPostalCode();
+                break;
+            case 3:
+                sortByContactType();
+                break;
+        }
     }
     
     /**
@@ -167,7 +385,7 @@ final class AddressBook {
         
         // Displaying contacts, retrieving index and counting duplicates
         for (int i = 0; i < addressBook.size(); i++) { 
-            if (lastName.equals(addressBook.get(i).getLastName())) { 
+            if (lastName.equalsIgnoreCase(addressBook.get(i).getLastName())) { 
                 System.out.println(addressBook.get(i).toString());
                 index = i;
                 indexes.add(i);
@@ -196,7 +414,7 @@ final class AddressBook {
         printModifyDetails();
         if ("Acquaintance".equals(addressBook.get(index).getClass().
             getSimpleName())) {
-            modifyAcquaintance();
+            printModifyAcquaintance();
             switch(restrictUpToTen()) {
                 case 1:
                     modifyFirstName(index);
@@ -229,9 +447,9 @@ final class AddressBook {
                     modifyLandlinePhone(index);
                     break;
             }
-        } else if ("Family".equals(AddressBook.getAddressBook().get(index).
-            getClass().getSimpleName())) {
-            modifyFamily();
+        } else if ("Family".equals(addressBook.get(index).getClass().
+            getSimpleName())) {
+            printModifyFamily();
             switch (restrictUpToTwelve()) {
                 case 1:
                     modifyFirstName(index);
@@ -271,7 +489,7 @@ final class AddressBook {
                     break;
             }
         } else {
-            modifyFriend();
+            printModifyFriend();
             switch(restrictUpToEleven()) {
                 case 1:
                     modifyFirstName(index);
@@ -317,198 +535,32 @@ final class AddressBook {
     private static void removeContact(String lastNameEntered){
         int index = -1;
         int i = 0;
-        for(; i < getAddressBook().size(); i++){ 
-            if(lastNameEntered.equals(getAddressBook().get(i).
+        for(; i < addressBook.size(); i++){ 
+            if(lastNameEntered.equals(addressBook.get(i).
                 getLastName())) { 
                 
                 // Storing to-be-removed contact for database updating
                 ArrayList<Contact> removed = new ArrayList<>();
-                removed.add(getAddressBook().get(i));
+                removed.add(addressBook.get(i));
                 
-                getAddressBook().remove(i);
+                addressBook.remove(i);
                 index = i;
             }
         }
         
         if (index == -1) printContactNotFound();
         else {
-            if ("Acquaintance".equals(AddressBook.getAddressBook().get(i).
+            if ("Acquaintance".equals(addressBook.get(i).
                 getClass().getSimpleName())) 
                 printAcquaintanceRemoved(i);
-            else if ("Family".equals(AddressBook.getAddressBook().get(i).
+            else if ("Family".equals(addressBook.get(i).
                 getClass().getSimpleName())) 
                 printFamilyRemoved(i);
             else printFriendRemoved(i);
         }
     }
-    
-    // Options for keeping address book open 
-    private static void continueAddressBook() throws IOException {
-        printExitMessage();
-        printSelectUpToTwo();
-        printYesOrNo();
-        
-        switch (restrictUpToTwo()) {
-            case 1:
-                closeAddressBook();
-                break;
-            case 2:
-                openAddressBook();
-                break;
-        }
-    }
-    
-    private static void displayContact() throws IOException {
-        printDisplayMethod();
-        
-        switch (restrictUpToThree()) {
-            case 1:
-                sortByLastName();
-                break;
-            case 2:
-                sortByPostalCode();
-                break;
-            case 3:
-                sortByContactType();
-                break;
-        }
-    }
-    
-    // Exiting the address book
-    private static void closeAddressBook() {
-        System.exit(0);
-    }
-    
-    // --------------------------- GETTER (1) ----------------------------------
-    /**
-     * Getting default address book's details
-     * @return the address book details
-     */
-    static ArrayList<Contact> getAddressBook() {
-        return addressBook;
-    }
-    
-    // Checking whether one in two options is chosen
-    private static int restrictUpToTwo() throws IOException {        
-        String readString;
-        int readInt = 0;
-        boolean condition;
-        boolean incorrect = true;        
-        while (incorrect) {
-            readString = readString();
-            boolean isDigit = containsDigitsOnly(readString);
-            if (isDigit == true) {
-                readInt = Integer.parseInt(readString);
-                condition = readInt < 1 && readInt > 2;
-                if (condition) printErrorMessage();
-                else incorrect = false;
-            } else printErrorMessage();
-        }   
-        return readInt;
-    }
-    
-    // Checking whether one in three options is chosen
-    private static int restrictUpToThree() throws IOException {
-        String readString;
-        int readInt = 0;
-        boolean condition;
-        boolean incorrect = true;        
-        while (incorrect) {
-            readString = readString();
-            boolean isDigit = containsDigitsOnly(readString);
-            if (isDigit == true) {
-                readInt = Integer.parseInt(readString);
-                condition = readInt < 1 && readInt > 3;
-                if (condition) printErrorMessage();
-                else incorrect = false;
-            } else printErrorMessage();
-        }   
-        return readInt;
-    }
-    
-    // Checking whether one in four options is chosen
-    private static int restrictUpToFour() throws IOException {
-        String readString;
-        int readInt = 0;
-        boolean condition;
-        boolean incorrect = true;        
-        while (incorrect) {
-            readString = readString();
-            boolean isDigit = containsDigitsOnly(readString);
-            if (isDigit == true) {
-                readInt = Integer.parseInt(readString);
-                condition = readInt < 1 && readInt > 4;
-                if (condition) printErrorMessage();
-                else incorrect = false;
-            } else printErrorMessage();
-        }   
-        return readInt;
-    }
-    
-    private static int restrictUpToTen() throws IOException {
-        String readString;
-        int readInt = 0;
-        boolean condition;
-        boolean incorrect = true;        
-        while (incorrect) {
-            readString = readString();
-            boolean isDigit = containsDigitsOnly(readString);
-            if (isDigit == true) {
-                readInt = Integer.parseInt(readString);
-                condition = readInt < 1 && readInt > 10;
-                if (condition) printErrorMessage();
-                else incorrect = false;
-            } else printErrorMessage();
-        }   
-        return readInt;
-    }
-    
-    private static int restrictUpToEleven() throws IOException {
-        String readString;
-        int readInt = 0;
-        boolean condition;
-        boolean incorrect = true;        
-        while (incorrect) {
-            readString = readString();
-            boolean isDigit = containsDigitsOnly(readString);
-            if (isDigit == true) {
-                readInt = Integer.parseInt(readString);
-                condition = readInt < 1 && readInt > 11;
-                if (condition) printErrorMessage();
-                else incorrect = false;
-            } else printErrorMessage();
-        }   
-        return readInt;
-    }
-    
-    private static int restrictUpToTwelve() throws IOException {
-        String readString;
-        int readInt = 0;
-        boolean condition;
-        boolean incorrect = true;        
-        while (incorrect) {
-            readString = readString();
-            boolean isDigit = containsDigitsOnly(readString);
-            if (isDigit == true) {
-                readInt = Integer.parseInt(readString);
-                condition = readInt < 1 && readInt > 12;
-                if (condition) printErrorMessage();
-                else incorrect = false;
-            } else printErrorMessage();
-        }   
-        return readInt;
-    }
-    
-    // Prompting for mandatory details, that is, first name, last name, and 
-    // landline phone number
-    private static String[] mandatoryDetails() throws IOException {
-        String firstName = promptFirstName();        
-        String lastName = promptLastName();        
-        String landlinePhone = promptLandlinePhone();        
-        String[] mandatoryDetails = {firstName, lastName, landlinePhone};        
-        return mandatoryDetails;
-    }
-    
+
+// ------------------------------- HELPERS -------------------------------------    
     // Prompting for common and nonmandatory details, that is, street number, 
     // street number suffix, street name, street name suffix, postal code, city,
     // and email address
@@ -550,7 +602,8 @@ final class AddressBook {
         return commonDetails;
     }
     
-    static boolean containsDigitsOnly(String text) {
+    // Checking whether objects contains digits only
+    private static boolean containsDigitsOnly(String text) {
         try {
             Long.parseLong(text);
             return true;
@@ -559,172 +612,14 @@ final class AddressBook {
         }
     }
     
-    static String controlMandatoryFirstName(String firstName) 
-            throws IOException {
-        // Empty string or null is not allow for this mandatory detail
-        boolean incorrect = true;
-        while (incorrect) {
-            if ("".equals(firstName) || firstName == null) {
-                printErrorMandatoryMessage();
-                firstName = promptFirstName();
-            } else incorrect = false;
-        }
-        return firstName;
-    }
-    
-    static String controlMandatoryLastName(String lastName) 
-            throws IOException {
-        // Empty string or null is not allow for this mandatory detail
-        boolean incorrect = true;
-        while (incorrect) {
-            if ("".equals(lastName) || lastName == null) {
-                printErrorMandatoryMessage();
-                lastName = promptLastName();
-            } else incorrect = false;
-        }
-        return lastName;
-    }
-    
-    static String controlMandatoryLandlinePhone(String landlinePhone) 
-            throws IOException {
-        // Empty string or null is not allow for this mandatory detail.
-        // Setting landline phone number's first digit to be equal to 0, second 
-        // digit to be equal to 1, ..., or 5, or 8, or 9, and length to be equal
-        // to 10
-        boolean incorrect = true;
-        boolean condition;
-        while (incorrect) {
-            if ("".equals(landlinePhone) || landlinePhone == null) {
-                printErrorMandatoryMessage();
-                landlinePhone = promptFirstName();
-            } else {
-                incorrect = false;
-                while (incorrect) {
-                    condition = containsDigitsOnly(landlinePhone) == false && 
-                    landlinePhone.length() != 10                       || 
-                    !"0".equals(landlinePhone.substring(0, 1))         || 
-                    !"1".equals(landlinePhone.substring(1, 2))         || 
-                    !"2".equals(landlinePhone.substring(1, 2))         || 
-                    !"3".equals(landlinePhone.substring(1, 2))         || 
-                    !"4".equals(landlinePhone.substring(1, 2))         || 
-                    !"5".equals(landlinePhone.substring(1, 2))         ||
-                    !"8".equals(landlinePhone.substring(1, 2))         || 
-                    !"9".equals(landlinePhone.substring(1, 2));
-                    if (condition) {
-                        printErrorMessage();
-                        landlinePhone = promptLandlinePhone();
-                    } else incorrect = false;
-                }
-            }
-        }
-        return landlinePhone;
-    }
-    
-    static String controlMobilePhone(String mobilePhone) throws 
-        IOException {       
-        // Setting mobile phone number's first digit to be equal to 0, second
-        // digit to be equal to 6 or 7, and length to be equal to 10 digits
-        boolean incorrect = true;
-        boolean condition; 
-        if ("".equals(mobilePhone) || mobilePhone == null) mobilePhone =
-            "Unknown";
-        else {
-            while (incorrect) {
-                condition = containsDigitsOnly(mobilePhone) == false && 
-                    mobilePhone.length() != 10                       || 
-                    !"0".equals(mobilePhone.substring(0, 1))         || 
-                    !"6".equals(mobilePhone.substring(1, 2))         || 
-                    !"7".equals(mobilePhone.substring(1, 2));
-                if (condition) {
-                    printErrorMessage();
-                    mobilePhone = promptMobilePhone();
-                } else incorrect = false;
-            }
-        }
-        return mobilePhone;
-    }
-    
-    static String controlBirthdate(String birthdate) throws IOException {
-        // Checking whether birthdate has the adequate format set in the 
-        // isDateValid method
-        boolean incorrect = true;
-        if ("".equals(birthdate) || birthdate == null) birthdate = "Unknown";
-        else {
-            while (incorrect) {
-                if (isDateValid(birthdate) == true) incorrect = false;
-                else {
-                    printErrorMessage();
-                    birthdate = promptBirthDate();
-                }
-            }
-        }
-        return birthdate;
-    }
-    
-    static String controlStreetNumber(String streetNumber) throws IOException {
-        // Setting street number string to contain digits only
-        boolean incorrect = true;
-        if ("".equals(streetNumber) || streetNumber == null) streetNumber =
-            "Unknown";
-        else {
-            while (incorrect) {            
-                if (containsDigitsOnly(streetNumber) == false) { 
-                    printErrorMessage();
-                    streetNumber = promptStreetNumber();
-                } else incorrect = false;
-            }
-        }
-        return streetNumber;
-    }
-    
-    static String controlPostalCode(String postalCode) throws IOException {
-        // Setting postal code to contain 5 digits only
-        boolean incorrect = true;
-        if ("".equals(postalCode) || postalCode == null) postalCode = "Unknown";
-        else {
-            while (incorrect) {             
-                if (containsDigitsOnly(postalCode) == false) {
-                    printErrorMessage();  
-                    postalCode = promptPostalCode();
-                } else incorrect = false;
-            }
-        }
-        return postalCode;
-    }
-    
-    static String controlEmail(String email) throws IOException {
-        // Setting controlEmail to be at least 6 characters long, to contain and
-        // to not start with the @ character, and to end with [.][two- or three-
-        // character string]
-        boolean incorrect = true;
-        boolean condition;
-        if ("".equals(email) || email == null) email = "Unknown";
-        else {
-            while (incorrect) {
-                condition = email.length() >= 6         && 
-                    ((!"".equals(email.substring(0, 1)) ||
-                    !"@".equals(email.substring(0, 1))) && 
-                    email.contains("@")                 && 
-                    (".".equals(email.substring(email.length() - 3, email.
-                    length() - 2))                      || 
-                    ".".equals(email.substring(email.length() - 4, email.
-                    length() - 3))));
-                if (!condition) {
-                    printErrorMessage();
-                    email = promptEmail();
-                } else incorrect = false;
-            }
-        }            
-        return email;
-    }
-    
-    static String controlID(String id, ArrayList<Integer> indexes) 
+    // Checking whether ID chosen by user is among those in the search result
+    private static String controlID(String id, ArrayList<Integer> indexes) 
         throws IOException {
         // Setting ID to contain digits only among specific ID's
         boolean incorrect = true;
         boolean condition;
         condition = indexes.contains(id) && (!"".equals(id) || id != null || 
-            containsDigitsOnly(id) == true);
+            containsDigitsOnly(id));
 
             while (incorrect) {            
                 if (!condition) { 
@@ -734,7 +629,9 @@ final class AddressBook {
             }
         return id;
     }
-    static boolean isDateValid(String dateEntered) {
+    
+    // Checking whether birthdate is valid 
+    private static boolean isDateValid(String dateEntered) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd mm "
                 + "yyyy");
@@ -745,112 +642,193 @@ final class AddressBook {
         }
     }
     
-    static String lastNameLength() {
-        int max = Integer.MIN_VALUE; 
-        for (int i = 0; i < addressBook.size(); i++) {
-            if (addressBook.get(i).getLastName().length() > max) 
-                max = addressBook.get(i).getLastName().length();
-        }
-        
-        if (max <= "Last Name".length()) return "%-" + "Last Name".length() + 
-            "s";
-        else return "%-" + max + "s";
+    // Checking whether email address format is valid
+    private static boolean isEmailValid(String email) {
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return email.matches(regex);
     }
     
-    static String firstNameLength() {
-        int max = Integer.MIN_VALUE; 
-        for (int i = 0; i < addressBook.size(); i++) {
-            if (addressBook.get(i).getFirstName().length() > max) 
-                max = addressBook.get(i).getFirstName().length();
-        }
-        
-        if (max <= "First Name".length()) return "%-" + "First Name".length() + 
-            "s";
-        else return "%-" + max + "s";
+    // Prompting for mandatory details, that is, first name, last name, and 
+    // landline phone number
+    private static String[] mandatoryDetails() throws IOException {
+        String firstName = promptFirstName();        
+        String lastName = promptLastName();        
+        String landlinePhone = promptLandlinePhone();        
+        String[] mandatoryDetails = {firstName, lastName, landlinePhone};        
+        return mandatoryDetails;
     }
     
-    static String idLength() {
-        int max = Integer.MIN_VALUE; 
-        for (int i = 0; i < addressBook.size(); i++) {
-            if (addressBook.get(i).getId() > max) 
-                max = Integer.toString(addressBook.get(i).getId()).length();
-        }
-        
-        if (max <= "ID".length()) return "%-" + "ID".length() + "s"; 
-        else return "%-" + max + "s";
+    // Checking whether one in eleven options is chosen
+    private static int restrictUpToEleven() throws IOException {
+        String readString;
+        int readInt = 0;
+        boolean condition;
+        boolean incorrect = true;        
+        while (incorrect) {
+            readString = readString();
+            boolean isDigit = containsDigitsOnly(readString);
+            if (isDigit) {
+                readInt = Integer.parseInt(readString);
+                condition = readInt < 1 && readInt > 11;
+                if (condition) printErrorMessage();
+                else incorrect = false;
+            } else printErrorMessage();
+        }   
+        return readInt;
     }
     
-    private static void sortByLastName(){
-        Collections.sort(addressBook, new SortByLastName());
-        printSortByLastName();
-        printHeader();
-        for (int i=0; i < addressBook.size(); i++) 
-            printContact(i);
-        
-        printQuantity(); 
+    // Checking whether one in four options is chosen
+    private static int restrictUpToFour() throws IOException {
+        String readString;
+        int readInt = 0;
+        boolean condition;
+        boolean incorrect = true;        
+        while (incorrect) {
+            readString = readString();
+            boolean isDigit = containsDigitsOnly(readString);
+            if (isDigit) {
+                readInt = Integer.parseInt(readString);
+                condition = readInt < 1 && readInt > 4;
+                if (condition) printErrorMessage();
+                else incorrect = false;
+            } else printErrorMessage();
+        }   
+        return readInt;
     }
     
-    private static void sortByPostalCode(){
-        Collections.sort(addressBook, new SortByPostalCode());
-        printSortByPostalCode();
-        printHeader();
-        for (int i=0; i < addressBook.size(); i++) 
-            printContact(i);
-        
-        printQuantity();
+    // Checking whether one in ten options is chosen
+    private static int restrictUpToTen() throws IOException {
+        String readString;
+        int readInt = 0;
+        boolean condition;
+        boolean incorrect = true;        
+        while (incorrect) {
+            readString = readString();
+            boolean isDigit = containsDigitsOnly(readString);
+            if (isDigit) {
+                readInt = Integer.parseInt(readString);
+                condition = readInt < 1 && readInt > 10;
+                if (condition) printErrorMessage();
+                else incorrect = false;
+            } else printErrorMessage();
+        }   
+        return readInt;
+    }
+   
+    // Checking whether one in three options is chosen
+    private static int restrictUpToThree() throws IOException {
+        String readString;
+        int readInt = 0;
+        boolean condition;
+        boolean incorrect = true;        
+        while (incorrect) {
+            readString = readString();
+            boolean isDigit = containsDigitsOnly(readString);
+            if (isDigit) {
+                readInt = Integer.parseInt(readString);
+                condition = readInt < 1 && readInt > 3;
+                if (condition) printErrorMessage();
+                else incorrect = false;
+            } else printErrorMessage();
+        }   
+        return readInt;
     }
     
+    // Checking whether one in twelve options is chosen
+    private static int restrictUpToTwelve() throws IOException {
+        String readString;
+        int readInt = 0;
+        boolean condition;
+        boolean incorrect = true;        
+        while (incorrect) {
+            readString = readString();
+            boolean isDigit = containsDigitsOnly(readString);
+            if (isDigit) {
+                readInt = Integer.parseInt(readString);
+                condition = readInt < 1 && readInt > 12;
+                if (condition) printErrorMessage();
+                else incorrect = false;
+            } else printErrorMessage();
+        }   
+        return readInt;
+    }
+    
+    // Checking whether one in two options is chosen
+    private static int restrictUpToTwo() throws IOException {        
+        String readString;
+        int readInt = 0;
+        boolean condition;
+        boolean incorrect = true;        
+        while (incorrect) {
+            readString = readString();
+            boolean isDigit = containsDigitsOnly(readString);
+            if (isDigit) {
+                readInt = Integer.parseInt(readString);
+                condition = readInt < 1 && readInt > 2;
+                if (condition) printErrorMessage();
+                else incorrect = false;
+            } else printErrorMessage();
+        }   
+        return readInt;
+    }
+    
+    // Sorting by contact type
     private static void sortByContactType(){
-        Collections.sort(addressBook, new SortByContactType());
+        Collections.sort(addressBook, (contact_1, contact_2) ->
+        {
+            int compared = contact_1.getClass().getSimpleName().compareTo(
+                contact_2.getClass().getSimpleName());
+            if (compared == 0) compared = Integer.compare(contact_1.getId(),
+                    contact_2.getId());
+            
+            return compared;
+        });
         printSortByContactType();
         printHeader();
         for (int i=0; i < addressBook.size(); i++) 
             printContact(i);
         
-        printQuantity();
+        printSize();
     }
     
-    private static class SortByLastName implements Comparator<Contact> {
-        /**
-        * Comparing two Contacts by last name
-        * @param contact_1 the first contact in comparison
-        * @param contact_2 the second contact in comparison
-        * @return the integer resulted from comparison
-        */
-        @Override
-        public int compare(Contact contact_1, Contact contact_2) {
-            return contact_1.getLastName().compareTo(contact_2.getLastName());
-        }
-    }
-    
-    private static class SortByPostalCode implements Comparator<Contact> {
-        /**
-        * Comparing two Contacts by postal code
-        * @param contact_1 the first contact in comparison
-        * @param contact_2 the second contact in comparison
-        * @return the integer resulted from comparison
-        */
-        @Override
-        public int compare(Contact contact_1, Contact contact_2) {
-            return contact_1.getPostalCode().compareTo(contact_2.
-                getPostalCode());
-        }
-    }
-    
-    private static class SortByContactType implements Comparator<Contact> {
-        /**
-        * Comparing two Contacts by contact type
-        * @param contact_1 the first contact in comparison
-        * @param contact_2 the second contact in comparison
-        * @return the integer resulted from comparison
-        */
-        @Override
-        public int compare(Contact contact_1, Contact contact_2) {
-            return contact_1.getClass().getSimpleName().compareTo(contact_2.
-                getClass().getSimpleName());
-        }
-    }
+    // Sorting by last name
+    private static void sortByLastName(){
+        Collections.sort(addressBook, (contact_1, contact_2) -> 
+        {
+            int compared = contact_1.getLastName().compareTo(contact_2.
+                getLastName());
+            if (compared == 0) compared = Integer.compare(contact_1.getId(),
+                    contact_2.getId());
             
-    // Address Book Instance Field
+            return compared;
+        });
+        printSortByLastName();
+        printHeader();
+        for (int i = 0; i < addressBook.size(); i++) printContact(i);
+        
+        printSize(); 
+    }
+    
+    // Sorting by postal code
+    private static void sortByPostalCode(){
+        Collections.sort(addressBook, (contact_1, contact_2) ->
+        {
+            int compared = contact_1.getPostalCode().compareTo(contact_2.
+                getPostalCode());
+            if (compared == 0) compared = Integer.compare(contact_1.getId(),
+                    contact_2.getId());
+            
+            return compared;
+        });
+        printSortByPostalCode();
+        printHeader();
+        for (int i=0; i < addressBook.size(); i++) 
+            printContact(i);
+        
+        printSize();
+    }
+    
+// ---------------------------- FIELD (1) --------------------------------------
+    // Class Field
     private static final ArrayList<Contact> addressBook = new ArrayList<>();
 }

@@ -4,6 +4,8 @@
  */
 package address_book;
 
+import static address_book.AddressBook.getAddressBook;
+import static address_book.AddressBook.startAddressBook;
 import java.io.IOException;
 
 /**
@@ -19,17 +21,15 @@ public class AddressBookTest {
      * Testing functionality 
      * @param args the command line argument
      * @throws IOException
-     * @throws java.lang.ClassNotFoundException
      */
-    public static void main(String[] args) throws IOException, 
-        ClassNotFoundException {
+    public static void main(String[] args) throws IOException {
         // Hard coding contacts
         Contact beyonce = new Acquaintance("Beyoncé", "Carter", "38", "bis",
                 "Rue de la Pêche", "Bat. B", "95100", "Argenteuil",
                 "beyonce@gmail.com", "0148255512");
         Contact justin = new Acquaintance("Justin", "Bieber", "26", "",
                 "Rue de la butte blanche", "", "93340", "Le Raincy",
-                "jstn@gmail.com", "0158968562");
+                "justin@gmail.com", "0158968562");
         Contact mariah = new Acquaintance("Mariah", "Carey", "", "", "", "", "",
                 "", "0197000253", "");
         Contact rihanna = new Family("Rihanna", "Fenty", "20 02 1988", "", "",
@@ -44,16 +44,15 @@ public class AddressBookTest {
                 "0196152368", "");
 
         // Adding hard coded contacts to address book
-        AddressBook addressBook;
-        addressBook = new AddressBook(beyonce);
-        addressBook = new AddressBook(justin);
-        addressBook = new AddressBook(mariah);
-        addressBook = new AddressBook(rihanna);
-        addressBook = new AddressBook(shakira);
-        addressBook = new AddressBook(madonna);
-        addressBook = new AddressBook(herb);
-        addressBook = new AddressBook(toby);
+        getAddressBook().add(beyonce);
+        getAddressBook().add(justin);
+        getAddressBook().add(mariah);
+        getAddressBook().add(rihanna);
+        getAddressBook().add(shakira);
+        getAddressBook().add(madonna);
+        getAddressBook().add(herb);
+        getAddressBook().add(toby);
 
-        Class.forName("address_book.AddressBook");
+        startAddressBook();
     }
 }
