@@ -43,7 +43,8 @@ abstract class AddressBookManager {
     
     // Modifying landline phone number
     static void modifyLandlinePhone(int index) throws IOException {
-        System.out.println("MODIFIER LE NUMERO DE TELEPHONE FIXE :");
+        System.out.println("MODIFIER LE NUMERO DE TELEPHONE FIXE (SANS LES "
+            + "ESPACES) :");
         getAddressBook().get(index).setLandlinePhone(readString());
     }
     
@@ -55,7 +56,8 @@ abstract class AddressBookManager {
     
     // Modifying mobile phone number
     static void modifyMobilePhone(int index) throws IOException {
-        System.out.println("MODIFIER LE NUMERO DE TELEPHONE MOBILE :");
+        System.out.println("MODIFIER LE NUMERO DE TELEPHONE MOBILE (SANS LES "
+            + "ESPACES) :");
         getAddressBook().get(index).setMobilePhone(readString());
     }
     
@@ -136,7 +138,7 @@ abstract class AddressBookManager {
     // Printing one of two options to choose from: mandatory details only or all 
     // details
     static void printEnterFirstDetails() {
-        System.out.println("1. AJOUTER SEULEMENT UN PRENOM, LE NOM ET LE "
+        System.out.println("1. AJOUTER SEULEMENT UN PRENOM, UN NOM ET UN "
             + "TELEPHONE FIXE \n2. AJOUTER D'AUTRES INFORMATIONS EN PLUS");
     }
     
@@ -187,9 +189,9 @@ abstract class AddressBookManager {
         System.out.print(" " + String.format(idLength(), "ID"));
         System.out.print(" " + String.format(firstNameLength(), "PRENOM"));
         System.out.print(" " + String.format(lastNameLength(), "NOM"));
-        System.out.print(" " + String.format("%-5s", "CP"));
-        System.out.print(" " + String.format("%-10s", "FIXE"));
-        System.out.println(" " + String.format("%-10s", "MOBILE"));
+        System.out.print(" " + String.format("%-7s", "CP"));
+        System.out.print(" " + String.format("%-14s", "FIXE"));
+        System.out.println(" " + String.format("%-14s", " MOBILE"));
     }    
     
     // Printing Acquaintance details to modify
@@ -266,12 +268,14 @@ abstract class AddressBookManager {
     
     // Printing address book size or number of contacts
     static void printSize() {
-        System.out.println(getAddressBook().size() + " contacts.");
+        System.out.println(getAddressBook().size() + " CONTACT.S.");
     }
     
     // Printing "sorted by contact type"
     static void printSortByContactType() {
         System.out.println("TRI PAR TYPE DE CONTACT :");
+        System.out.println("A POUR AMI, C POUR CONNAISSANCE, ET F POUR "
+            + "FAMILLE");
     }
     
     // Printing "sorted by last name"
@@ -310,7 +314,7 @@ abstract class AddressBookManager {
     // Prompting for birthdate
     static String promptBirthDate() throws IOException {
         System.out.println("SAISIR LA DATE DE NAISSANCE AU FORMAT \"dd mm "
-            + "yyyy\" \n OU NE RIEN SAISIR AUTREMENT :");
+            + "yyyy\" \nOU NE RIEN SAISIR AUTREMENT :");
         return readString();
     }
     
@@ -339,7 +343,8 @@ abstract class AddressBookManager {
     
     // Prompting for landline phone number
     static String promptLandlinePhone() throws IOException {
-        System.out.println("SAISIR LE NUMERO DE TELEPHONE FIXE :");
+        System.out.println("SAISIR LE NUMERO DE TELEPHONE FIXE (SANS LES "
+            + "ESPACES) :");
         return readString();
     }
     
@@ -351,7 +356,8 @@ abstract class AddressBookManager {
     
     // Prompting for mobile phone number
     static String promptMobilePhone() throws IOException {
-        System.out.println("SAISIR LE NUMERO DE TELEPHONE MOBILE :");
+        System.out.println("SAISIR LE NUMERO DE TELEPHONE MOBILE (SANS LES "
+            + "ESPACES) :");
         return readString();
     }
     

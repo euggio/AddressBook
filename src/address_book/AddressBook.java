@@ -52,7 +52,7 @@ abstract class AddressBook {
                 lastName = promptLastName();
             } else incorrect = false;
         }
-        return lastName;
+        return lastName.toUpperCase();
     }
     
     // Empty string or null is not allow for this mandatory detail.
@@ -71,15 +71,15 @@ abstract class AddressBook {
                 incorrect = false;
                 while (incorrect) {
                     condition = containsDigitsOnly(landlinePhone) == false && 
-                    landlinePhone.length() != 10                       || 
-                    !"0".equals(landlinePhone.substring(0, 1))         || 
-                    !"1".equals(landlinePhone.substring(1, 2))         || 
-                    !"2".equals(landlinePhone.substring(1, 2))         || 
-                    !"3".equals(landlinePhone.substring(1, 2))         || 
-                    !"4".equals(landlinePhone.substring(1, 2))         || 
-                    !"5".equals(landlinePhone.substring(1, 2))         ||
-                    !"8".equals(landlinePhone.substring(1, 2))         || 
-                    !"9".equals(landlinePhone.substring(1, 2));
+                    landlinePhone.length() != 10                           && 
+                    !"0".equals(landlinePhone.substring(0, 1))             && 
+                    (!"1".equals(landlinePhone.substring(1, 2))            || 
+                    !"2".equals(landlinePhone.substring(1, 2))             || 
+                    !"3".equals(landlinePhone.substring(1, 2))             || 
+                    !"4".equals(landlinePhone.substring(1, 2))             || 
+                    !"5".equals(landlinePhone.substring(1, 2))             ||
+                    !"8".equals(landlinePhone.substring(1, 2))             || 
+                    !"9".equals(landlinePhone.substring(1, 2)));
                     if (condition) {
                         printErrorMessage();
                         landlinePhone = promptLandlinePhone();
@@ -87,36 +87,51 @@ abstract class AddressBook {
                 }
             }
         }
-        return landlinePhone;
+        
+        // Putting space after every two digits 
+        StringBuilder phone = new StringBuilder();
+        for (int i = 2; i <= landlinePhone.length(); i += 2) {
+            phone.append(landlinePhone.substring(i - 2, i - 1));
+            phone.append(landlinePhone.substring(i - 1, i));
+            phone.append(" ");
+        }
+        return phone.toString();
     }
     
     // Setting mobile phone number's first digit to be equal to 0, second
     // digit to be equal to 6 or 7, and length to be equal to 10 digits
-    static String controlMobilePhone(String mobilePhone) throws IOException {       
+    static String controlMobilePhone(String mobilePhone) throws IOException {        
+        if ("".equals(mobilePhone) || mobilePhone == null) return mobilePhone =
+            "INCONNU";
+        
         boolean incorrect = true;
-        boolean condition; 
-        if ("".equals(mobilePhone) || mobilePhone == null) mobilePhone =
-            "Unknown";
-        else {
-            while (incorrect) {
-                condition = containsDigitsOnly(mobilePhone) == false && 
-                    mobilePhone.length() != 10                       || 
-                    !"0".equals(mobilePhone.substring(0, 1))         || 
-                    !"6".equals(mobilePhone.substring(1, 2))         || 
-                    !"7".equals(mobilePhone.substring(1, 2));
-                if (condition) {
-                    printErrorMessage();
-                    mobilePhone = promptMobilePhone();
-                } else incorrect = false;
-            }
+        boolean condition;
+        while (incorrect) {
+            condition = containsDigitsOnly(mobilePhone) == false && 
+                mobilePhone.length() != 10                       && 
+                !"0".equals(mobilePhone.substring(0, 1))         && 
+                (!"6".equals(mobilePhone.substring(1, 2))        || 
+                !"7".equals(mobilePhone.substring(1, 2)));
+            if (condition) {
+                printErrorMessage();
+                mobilePhone = promptMobilePhone();
+            } else incorrect = false;
         }
-        return mobilePhone;
+        
+        // Putting space after every two digits
+        StringBuilder phone = new StringBuilder();
+        for (int i = 2; i <= mobilePhone.length(); i += 2) {
+            phone.append(mobilePhone.substring(i - 2, i - 1));
+            phone.append(mobilePhone.substring(i - 1, i));
+            phone.append(" ");
+        }
+        return phone.toString().trim();
     }
     
     // Checking whether birthdate is valid or unknown
     static String controlBirthdate(String birthdate) throws IOException {
         boolean incorrect = true;
-        if ("".equals(birthdate) || birthdate == null) birthdate = "Unknown";
+        if ("".equals(birthdate) || birthdate == null) birthdate = "INCONNUE";
         else {
             while (incorrect) {
                 if (isDateValid(birthdate)) incorrect = false;
@@ -134,7 +149,7 @@ abstract class AddressBook {
         // Setting street number string to contain digits only
         boolean incorrect = true;
         if ("".equals(streetNumber) || streetNumber == null) streetNumber =
-            "Unknown";
+            "INCONNU";
         else {
             while (incorrect) {            
                 if (containsDigitsOnly(streetNumber) == false) { 
@@ -151,7 +166,7 @@ abstract class AddressBook {
         IOException {
         // Setting postal code to contain 5 digits only
         boolean incorrect = true;
-        if ("".equals(postalCode) || postalCode == null) postalCode = "Unknown";
+        if ("".equals(postalCode) || postalCode == null) postalCode = "INCONNU";
         else {
             while (incorrect) {             
                 if (containsDigitsOnly(postalCode) == false) {
@@ -165,15 +180,14 @@ abstract class AddressBook {
     
     // Returning valid or unknown email address 
     static String controlEmail(String email) throws IOException {
+        if ("".equals(email) || email == null) return "INCONNU";
+          
         boolean incorrect = true;
-        if ("".equals(email) || email == null) email = "Unknown";
-        else {
-            while (incorrect) {
-                if (!isEmailValid(email)) {
-                    printErrorMessage();
-                    email = promptEmail();
-                } else incorrect = false;
-            }
+        while (incorrect) {
+            if (!isEmailValid(email)) {
+                printErrorMessage();
+                email = promptEmail();
+            } else incorrect = false;
         }    
         return email;
     }
@@ -186,7 +200,7 @@ abstract class AddressBook {
                 max = addressBook.get(i).getFirstName().length();
         }
         
-        if (max <= "First Name".length()) return "%-" + "First Name".length() + 
+        if (max <= "PRENOM".length()) return "%-" + "PRENOM".length() + 
             "s";
         else return "%-" + max + "s";
     }
@@ -211,7 +225,7 @@ abstract class AddressBook {
                 max = addressBook.get(i).getLastName().length();
         }
         
-        if (max <= "Last Name".length()) return "%-" + "Last Name".length() + 
+        if (max <= "NOM".length()) return "%-" + "NOM".length() + 
             "s";
         else return "%-" + max + "s";
     }
@@ -248,6 +262,7 @@ abstract class AddressBook {
                 break;
             case 4:
                 displayContact();
+                continueAddressBook();
                 break;
         }
     }
@@ -631,11 +646,11 @@ abstract class AddressBook {
     }
     
     // Checking whether birthdate is valid 
-    private static boolean isDateValid(String dateEntered) {
+    private static boolean isDateValid(String date) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd mm "
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM "
                 + "yyyy");
-            LocalDate date = LocalDate.parse(dateEntered, formatter);
+            LocalDate.parse(date, formatter);
             return true;
         } catch (DateTimeParseException ex) {
             return false;
@@ -774,10 +789,37 @@ abstract class AddressBook {
     
     // Sorting by contact type
     private static void sortByContactType(){
-        Collections.sort(addressBook, (contact_1, contact_2) ->
-        {
-            int compared = contact_1.getClass().getSimpleName().compareTo(
-                contact_2.getClass().getSimpleName());
+        Collections.sort(addressBook, (contact_1, contact_2) -> {
+            // Converting English type names to French type initials
+            // C for Connaissance (Acquaintance), F for Famille (Family), and A
+            // for Ami (Friend)
+            String type_1;
+            switch (contact_1.getClass().getSimpleName()) {
+                case "Acquaintance":
+                    type_1 = "C";
+                    break;
+                case "Family":
+                    type_1 = "F";
+                    break;
+                default:
+                    type_1 = "A";
+                    break;
+            }
+            
+            String type_2;
+            switch (contact_2.getClass().getSimpleName()) {
+                case "Acquaintance":
+                    type_2 = "C";
+                    break;
+                case "Family":
+                    type_2 = "F";
+                    break;
+                default:
+                    type_2 = "A";
+                    break;
+            }
+            
+            int compared = type_1.compareTo(type_2);
             if (compared == 0) compared = Integer.compare(contact_1.getId(),
                     contact_2.getId());
             

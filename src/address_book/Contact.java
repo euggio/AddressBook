@@ -47,20 +47,20 @@ class Contact {
         this.streetNumber = controlStreetNumber(streetNumber);
 
         if ("".equals(streetNumberSuffix) || streetNumberSuffix == null) this.
-            streetNumberSuffix = "Unknown";
+            streetNumberSuffix = "INCONNU";
         else this.streetNumberSuffix = streetNumberSuffix;        
         
         if ("".equals(streetName) || streetName == null) this.streetName = 
-            "Unknown";
+            "INCONNU";
         else this.streetName = streetName;             
         
         if ("".equals(streetNameSuffix) || streetNameSuffix == null) this.
-            streetNameSuffix = "Unknown";
+            streetNameSuffix = "INCONNU";
         else this.streetNameSuffix = streetNameSuffix;
         
         this.postalCode = controlPostalCode(postalCode);
 
-        if ("".equals(city) || city == null) this.city = "Unknown";
+        if ("".equals(city) || city == null) this.city = "INCONNUE";
         else this.city = city;
         
         this.email = controlEmail(email);
@@ -91,7 +91,7 @@ class Contact {
         String postalCode, String city, String email, String landlinePhone, 
         String mobilePhone) throws IOException { 
         
-        /// Empty strings and nulls are translated to Unknown, except for 
+        /// Empty strings and nulls are translated to INCONNUE, except for 
         // mandatory details, such as first names, last names, and landline 
         // phone numbers
         this.firstName = controlMandatoryFirstName(firstName);
@@ -100,20 +100,20 @@ class Contact {
         this.streetNumber = controlStreetNumber(streetNumber);
 
         if ("".equals(streetNumberSuffix) || streetNumberSuffix == null) this.
-            streetNumberSuffix = "Unknown";
+            streetNumberSuffix = "INCONNU";
         else this.streetNumberSuffix = streetNumberSuffix;        
         
         if ("".equals(streetName) || streetName == null) this.streetName = 
-            "Unknown";
+            "INCONNU";
         else this.streetName = streetName;             
         
         if ("".equals(streetNameSuffix) || streetNameSuffix == null) this.
-            streetNameSuffix = "Unknown";
+            streetNameSuffix = "INCONNU";
         else this.streetNameSuffix = streetNameSuffix;
         
         this.postalCode = controlPostalCode(postalCode);
 
-        if ("".equals(city) || city == null) this.city = "Unknown";
+        if ("".equals(city) || city == null) this.city = "INCONNUE";
         else this.city = city;
 
         this.email = controlEmail(email);
@@ -154,20 +154,20 @@ class Contact {
         this.streetNumber = controlStreetNumber(streetNumber);
 
         if ("".equals(streetNumberSuffix) || streetNumberSuffix == null) this.
-            streetNumberSuffix = "Unknown";
+            streetNumberSuffix = "INCONNU";
         else this.streetNumberSuffix = streetNumberSuffix;        
         
         if ("".equals(streetName) || streetName == null) this.streetName = 
-            "Unknown";
+            "INCONNU";
         else this.streetName = streetName;             
         
         if ("".equals(streetNameSuffix) || streetNameSuffix == null) this.
-            streetNameSuffix = "Unknown";
+            streetNameSuffix = "INCONNU";
         else this.streetNameSuffix = streetNameSuffix;
         
         this.postalCode = controlPostalCode(postalCode);
 
-        if ("".equals(city) || city == null) this.city = "Unknown";
+        if ("".equals(city) || city == null) this.city = "INCONNUE";
         else this.city = city;
 
         this.email = controlEmail(email);
@@ -184,14 +184,18 @@ class Contact {
     public final String toString() {   
         // Allows to display first name, ID, landline controlPhone number, and, for 
         // sorting purposes, contact type, last name, and postal code
-        return  String.format("%-4s", getClass().getSimpleName().
-            substring(0, 1))
+        String format = "";
+        if ("Acquaintance".equals(getClass().getSimpleName())) format = "C";
+        else if ("Family".equals(getClass().getSimpleName())) format = "F";
+        else format = "A";
+        
+        return  String.format("%-4s", format)
             + " " + String.format(idLength(), Integer.toString(id))
             + " " + String.format(firstNameLength(), firstName)
             + " " + String.format(lastNameLength(), lastName)
-            + " " + String.format("%-5s", postalCode)
+            + " " + String.format("%-7s", postalCode)
             + " " + String.format("%-10s", landlinePhone)
-            + " " + String.format("%-10s", landlinePhone);
+            + " " + String.format("%-10s", mobilePhone);
     }    
     
     /**
@@ -323,13 +327,13 @@ class Contact {
      * @return the full address 
      */
     String getAddress() {
-        if ("Unknown".equals(streetNumber)) return "Unknown";
+        if ("INCONNU".equals(streetNumber)) return "INCONNU";
         else {
-            if ("Unknown".equals(streetNumberSuffix)) 
+            if ("INCONNU".equals(streetNumberSuffix)) 
                 streetNumberSuffix = " ";
             else streetNumberSuffix = " " + streetNumberSuffix + " ";
         
-            if ("Unknown".equals(streetNameSuffix)) streetNameSuffix = " ";
+            if ("INCONNU".equals(streetNameSuffix)) streetNameSuffix = " ";
             else streetNameSuffix = " " + streetNameSuffix + " "; 
         
         return streetNumber + streetNumberSuffix + streetName +
@@ -403,7 +407,7 @@ class Contact {
     void setStreetNumberSuffix(String streetNumberSuffix) {
         // Allowing user to enter empty string as s/he changes her/his mind
         if ("".equals(streetNumberSuffix) || streetNumberSuffix == null) this.
-            streetNumberSuffix = "Unknown";
+            streetNumberSuffix = "INCONNU";
         else this.streetNumberSuffix = streetNumberSuffix;
     }
 
@@ -414,7 +418,7 @@ class Contact {
     void setStreetName(String streetName) {
         // Allowing user to enter empty string as s/he changes her/his mind
         if ("".equals(streetName) || streetName == null) this.streetName = 
-            "Unknown";
+            "INCONNU";
         else this.streetName = streetName;
     }
     
@@ -425,7 +429,7 @@ class Contact {
     void setStreetNameSuffix(String streetNameSuffix) {
         /// Allowing user to enter empty string as s/he changes her/his mind
         if ("".equals(streetNameSuffix) || streetNameSuffix == null) this.
-            streetNameSuffix = "Unknown";
+            streetNameSuffix = "INCONNU";
         else this.streetNameSuffix = streetNameSuffix;
     }
     
@@ -444,7 +448,7 @@ class Contact {
      */
     void setCity(String city) {
         // Allowing user to enter empty string as s/he changes her/his mind
-        if ("".equals(city) || city == null) this.city = "Unknown";
+        if ("".equals(city) || city == null) this.city = "INCONNUE";
         else this.city = city;
     }
     

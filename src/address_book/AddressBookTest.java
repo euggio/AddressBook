@@ -31,7 +31,7 @@ public class AddressBookTest {
                 "Rue de la butte blanche", "", "93340", "Le Raincy",
                 "justin@gmail.com", "0158968562");
         Contact mariah = new Acquaintance("Mariah", "Carey", "", "", "", "", "",
-                "", "0197000253", "");
+                "", "", "0197000253");
         Contact rihanna = new Family("Rihanna", "Fenty", "20 02 1988", "", "",
                 "", "", "", "", "", "0102548796", "0615241589");
         Contact shakira = new Family("Shakira", "Mebarak Ripoll", "", "", "",
