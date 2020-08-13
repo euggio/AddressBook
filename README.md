@@ -5,4 +5,9 @@
 <p>This address book prompts the user in French to add, find, modify, display, and remove contacts.</p>
 <p>Contacts' details can be modified once a search has been initiated. On display, contacts can be sorted by last name, by postal code, and also by contact type.</p>   
 <p>The address book uses simple Java code and object-oriented programming, inheritance, interface, exception, generic programming, and collections framework in their very basic level.</p>  
-<p>This simple project has been developed during my bootcamp training at the AFPA school, 6-8 Rue Georges et Maï Politzer, 75012 PARIS.</p>
+
+*Gif showing an aperçu of the application's mechanism:*
+
+![20200813_193808](https://user-images.githubusercontent.com/59257795/90167987-c4866480-dd9c-11ea-932d-d266705bc301.gif)
+
+###### This simple project has been developed during my bootcamp training at the AFPA school, 6-8 Rue Georges et Maï Politzer, 75012 PARIS.
