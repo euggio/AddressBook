@@ -1,141 +1,78 @@
 package address_book;
 
-import static address_book.AddressBookManager.*;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * ADDRESS BOOK CLASS
- * This address book class holds French contacts and adds, finds, modifies, and 
+ * Holds French contacts and adds, finds, modifies, and 
  * also removes contacts.
  * It allows user to add same contact as many times as s/he wishes to
  * @author euggio
  */
-abstract class AddressBook {
-    // Getting the address book list
-    /**
-     * Getting default address book's details
-     * @return the address book details
+final class AddressBook {
+    /*
+     * Takes from MAIN an array of hard-coded default contacts, which are used 
+     * by developer to populate his own database.
+     * Also used to open address book.
+     * Commented-out statement removes those default contacts and is also 
+     * supposed to be uncommented when program is shared 
      */
-    static ArrayList<Contact> getAddressBook() {
+    AddressBook(Contact... contacts) throws IOException {
+        printWelcome();
+        openAddressBook();
+        addressBook.addAll(Arrays.asList(contacts));
+        // addressBook.removeAll(Arrays.asList(contacts));
+    }
+    
+    // Parameterless constructor
+    AddressBook() {
+    }   
+        
+    // Gets the address book's value
+    ArrayList<Contact> getAddressBook() {
         return addressBook;
     }
     
-    // Enforcing mandatory nature of first name
-    static String controlMandatoryFirstName(String firstName) 
-        throws IOException {
-        // Empty string or null is not allow for this mandatory detail
-        boolean incorrect = true;
-        while (incorrect) {
-            if ("".equals(firstName) || firstName == null) {
-                printErrorMandatoryMessage();
-                firstName = promptFirstName();
-            } else incorrect = false;
-        }
-        return firstName;
-    }
-    
-    // Enforcing mandatory nature of last name
-    static String controlMandatoryLastName(String lastName) throws IOException {
-        // Empty string or null is not allow for this mandatory detail
-        boolean incorrect = true;
-        while (incorrect) {
-            if ("".equals(lastName) || lastName == null) {
-                printErrorMandatoryMessage();
-                lastName = promptLastName();
-            } else incorrect = false;
-        }
-        return lastName.toUpperCase();
-    }
-    
-    // Empty string or null is not allow for this mandatory detail.
-    // Setting landline phone number's first digit to be equal to 0, second 
-    // digit to be equal to 1, ..., or 5, or 8, or 9, and length to be equal
-    // to 10
-    static String controlMandatoryLandlinePhone(String landlinePhone) 
-            throws IOException {
-        boolean incorrect = true;
-        boolean condition;
-        while (incorrect) {
-            if ("".equals(landlinePhone) || landlinePhone == null) {
-                printErrorMandatoryMessage();
-                landlinePhone = promptFirstName();
-            } else {
-                incorrect = false;
-                while (incorrect) {
-                    condition = containsDigitsOnly(landlinePhone) == false && 
-                    landlinePhone.length() != 10                           && 
-                    !"0".equals(landlinePhone.substring(0, 1))             && 
-                    (!"1".equals(landlinePhone.substring(1, 2))            || 
-                    !"2".equals(landlinePhone.substring(1, 2))             || 
-                    !"3".equals(landlinePhone.substring(1, 2))             || 
-                    !"4".equals(landlinePhone.substring(1, 2))             || 
-                    !"5".equals(landlinePhone.substring(1, 2))             ||
-                    !"8".equals(landlinePhone.substring(1, 2))             || 
-                    !"9".equals(landlinePhone.substring(1, 2)));
-                    if (condition) {
-                        printErrorMessage();
-                        landlinePhone = promptLandlinePhone();
-                    } else incorrect = false;
-                }
-            }
-        }
-        
-        // Putting space after every two digits 
-        StringBuilder phone = new StringBuilder();
-        for (int i = 2; i <= landlinePhone.length(); i += 2) {
-            phone.append(landlinePhone.substring(i - 2, i - 1));
-            phone.append(landlinePhone.substring(i - 1, i));
-            phone.append(" ");
-        }
-        return phone.toString();
-    }
-    
-    // Setting mobile phone number's first digit to be equal to 0, second
-    // digit to be equal to 6 or 7, and length to be equal to 10 digits
-    static String controlMobilePhone(String mobilePhone) throws IOException {        
+    /*
+     * Checks whether first digit is equal to 0, second digit to 6 or 7, length 
+     * to 10, based on French mobile phone number format
+     * Also puts in space every two digits
+     */
+    String checkMobilePhone(String mobilePhone) throws IOException {        
         if ("".equals(mobilePhone) || mobilePhone == null) return mobilePhone =
             "INCONNU";
         
         boolean incorrect = true;
-        boolean condition;
         while (incorrect) {
-            condition = containsDigitsOnly(mobilePhone) == false && 
-                mobilePhone.length() != 10                       && 
-                !"0".equals(mobilePhone.substring(0, 1))         && 
-                (!"6".equals(mobilePhone.substring(1, 2))        || 
-                !"7".equals(mobilePhone.substring(1, 2)));
-            if (condition) {
+            if (!mobilePhone.matches("^(0)[67](\\d){8}$")) {
                 printErrorMessage();
                 mobilePhone = promptMobilePhone();
             } else incorrect = false;
         }
-        
-        // Putting space after every two digits
-        StringBuilder phone = new StringBuilder();
-        for (int i = 2; i <= mobilePhone.length(); i += 2) {
-            phone.append(mobilePhone.substring(i - 2, i - 1));
-            phone.append(mobilePhone.substring(i - 1, i));
-            phone.append(" ");
-        }
-        return phone.toString().trim();
+        return spacePhone(mobilePhone);
     }
     
-    // Checking whether birthdate is valid or unknown
-    static String controlBirthdate(String birthdate) throws IOException {
+    // Checks whether birthdate is valid or unknown
+    String checkBirthdate(String birthdate) throws IOException {
         boolean incorrect = true;
         if ("".equals(birthdate) || birthdate == null) birthdate = "INCONNUE";
         else {
             while (incorrect) {
-                if (isDateValid(birthdate)) incorrect = false;
-                else {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.
+                        ofPattern("dd MM yyyy");
+                    LocalDate.parse(birthdate, formatter);
+                    incorrect = false;
+                } catch (DateTimeParseException ex) {
+                    ex.printStackTrace();
                     printErrorMessage();
                     birthdate = promptBirthDate();
                 }
@@ -144,9 +81,9 @@ abstract class AddressBook {
         return birthdate;
     }
     
-    // Checking whether street number is valid or unknown
-    static String controlStreetNumber(String streetNumber) throws IOException {
-        // Setting street number string to contain digits only
+    // Checks whether street number is valid or unknown and contains digits 
+    // only
+    String checkStreetNumber(String streetNumber) throws IOException {
         boolean incorrect = true;
         if ("".equals(streetNumber) || streetNumber == null) streetNumber =
             "INCONNU";
@@ -161,10 +98,9 @@ abstract class AddressBook {
         return streetNumber;
     }
     
-    // Checking whether postal code is valid or unknown
-    static String controlPostalCode(String postalCode) throws 
-        IOException {
-        // Setting postal code to contain 5 digits only
+    // Checks whether postal code is valid or unknown and contains 5 digits 
+    // only
+    String checkPostalCode(String postalCode) throws IOException {
         boolean incorrect = true;
         if ("".equals(postalCode) || postalCode == null) postalCode = "INCONNU";
         else {
@@ -178,13 +114,14 @@ abstract class AddressBook {
         return postalCode;
     }
     
-    // Returning valid or unknown email address 
-    static String controlEmail(String email) throws IOException {
+    // Returns valid or unknown email address 
+    String checkEmail(String email) throws IOException {
         if ("".equals(email) || email == null) return "INCONNU";
           
         boolean incorrect = true;
         while (incorrect) {
-            if (!isEmailValid(email)) {
+            if (!email.matches("^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+"
+                + "[\\w]$")) {
                 printErrorMessage();
                 email = promptEmail();
             } else incorrect = false;
@@ -192,8 +129,8 @@ abstract class AddressBook {
         return email;
     }
     
-    // Retrieving first name length for table format on display
-    static String firstNameLength() {
+    // Retrieves first name's max length for formatting purposes
+    String firstNameMaxLength() {
         int max = Integer.MIN_VALUE; 
         for (int i = 0; i < addressBook.size(); i++) {
             if (addressBook.get(i).getFirstName().length() > max) 
@@ -205,8 +142,8 @@ abstract class AddressBook {
         else return "%-" + max + "s";
     }
     
-    // Retrieving ID length for table format on display
-    static String idLength() {
+    // Retrieves ID's max length for formatting purposes
+    String idMaxLength() {
         int max = Integer.MIN_VALUE; 
         for (int i = 0; i < addressBook.size(); i++) {
             if (addressBook.get(i).getId() > max) 
@@ -217,8 +154,8 @@ abstract class AddressBook {
         else return "%-" + max + "s";
     }
     
-    // Retrieving last name length for table format on display
-    static String lastNameLength() {
+    // Retrieves last name's max length for formatting purposes
+    String lastNameMaxLength() {
         int max = Integer.MIN_VALUE; 
         for (int i = 0; i < addressBook.size(); i++) {
             if (addressBook.get(i).getLastName().length() > max) 
@@ -230,21 +167,71 @@ abstract class AddressBook {
         else return "%-" + max + "s";
     }
     
-    // Starting the address book
-    static void startAddressBook() throws IOException {
-        printWelcome();
-        openAddressBook();        
+    /*
+     * Sets first name to being nonempty and nonnull.
+     * Also sets first letter to uppercase
+     */
+    String setFirstNameAsMandatory(String firstName) throws IOException {
+        boolean incorrect = true;
+        while (incorrect) {
+            if ("".equals(firstName) || firstName == null) {
+                printMandatoryInputErrorMessage();
+                firstName = promptFirstName();
+            } else incorrect = false;
+        }
+        return firstName.substring(0, 1).toUpperCase() + firstName.substring(1);
+    }
+    
+    /*
+     * Sets landline phone number to being nonempty and nonnull.
+     * Sets first digit to being equal to 0, second digit to being equal to
+     * 1, ..., or 5, or 9, and length to being equal to 10 based on French 
+     * landline phone number format
+     * Also puts in space every two digits
+     */
+    String setLandlinePhoneAsMandatory(String landlinePhone) 
+            throws IOException {
+        boolean incorrect = true;
+        while (incorrect) {
+            if ("".equals(landlinePhone) || landlinePhone == null) {
+                printMandatoryInputErrorMessage();
+                landlinePhone = promptLandlinePhone();
+            } else {
+                incorrect = false;
+                while (incorrect) {                    
+                    if (!landlinePhone.matches("^(0)[1-59](\\d){8}$")) {
+                        printErrorMessage();
+                        landlinePhone = promptLandlinePhone();
+                    } else incorrect = false;
+                }
+            }
+        }
+        return spacePhone(landlinePhone);
+    }
+    
+    /*
+     * Sets last name to being nonempty and nonnull.
+     * Also sets it to uppercase  
+     */
+    String setLastNameAsMandatory(String lastName) throws IOException {
+        boolean incorrect = true;
+        while (incorrect) {
+            if ("".equals(lastName) || lastName == null) {
+                printMandatoryInputErrorMessage();
+                lastName = promptLastName();
+            } else incorrect = false;
+        }
+        return lastName.toUpperCase();
     }
     
 // ------------------------------- PRIVATES ------------------------------------
+    
 // --------------------- ADDRESS BOOK PRIMARY FUNCTIONS ------------------------    
-    /**
-     * Opening the address book
-     * This method allows for adding contacts, searching for contacts, 
-     * removing contacts, and displaying the address book
-     * @throws IOException
+    /*
+     * Opens address book and allows for adding contacts, searching for 
+     * contacts, removing contacts, and displaying address book
      */
-    private static void openAddressBook() throws IOException {
+    private void openAddressBook() throws IOException {
         printSelectUpToFour();
          
         switch (restrictUpToFour()) {
@@ -267,11 +254,8 @@ abstract class AddressBook {
         }
     }
     
-    /**
-     * Adding contacts starting with name
-     * @throws IOException
-     */
-    private static void addContact() throws IOException {
+    // Adds contacts starting with last name
+    private void addContact() throws IOException {
         printSelectUpToTwo();
         printEnterFirstDetails();
         
@@ -322,8 +306,8 @@ abstract class AddressBook {
                         printAcquaintanceAdded();
                         break;
                     case 2:
-                        birthdate = controlBirthdate(promptBirthDate());
-                        mobilePhone = controlMobilePhone(promptMobilePhone());
+                        birthdate = checkBirthdate(promptBirthDate());
+                        mobilePhone = checkMobilePhone(promptMobilePhone());
                         addressBook.add(new Family(mandatoryDetails[0],
                             mandatoryDetails[1], birthdate, commonDetails[0], 
                             commonDetails[1], commonDetails[2], 
@@ -333,7 +317,7 @@ abstract class AddressBook {
                         printFamilyAdded();
                         break;
                     case 3:
-                        mobilePhone = controlMobilePhone(promptMobilePhone());
+                        mobilePhone = checkMobilePhone(promptMobilePhone());
                         addressBook.add(new Friend(mandatoryDetails[0], 
                             mandatoryDetails[1], commonDetails[0], 
                             commonDetails[1], commonDetails[2], 
@@ -347,13 +331,13 @@ abstract class AddressBook {
         }        
     }
     
-    // Exiting the address book
-    private static void closeAddressBook() {
+    // Closes address book
+    private void closeAddressBook() {
         System.exit(0);
     }
     
-    // Options for keeping address book open 
-    private static void continueAddressBook() throws IOException {
+    // Keeps address book open 
+    private void continueAddressBook() throws IOException {
         printExitMessage();
         printSelectUpToTwo();
         printYesOrNo();
@@ -368,9 +352,9 @@ abstract class AddressBook {
         }
     }
     
-    // Displaying contacts' details or address book
-    private static void displayContact() throws IOException {
-        printDisplayMethod();
+    // Displays contacts' details or address book
+    private void displayContact() throws IOException {
+        printSortOptions();
         
         switch (restrictUpToThree()) {
             case 1:
@@ -385,47 +369,49 @@ abstract class AddressBook {
         }
     }
     
-    /**
-     * Searching for contacts
-     * @param lastName, the last name entered for search by user
-     * @throws java.io.IOException
-     */
-    private static void findContact(String lastName) throws IOException
-    {
+    // Searches for contacts
+    private void findContact(String lastName) throws IOException {
         int count = 0;
         int index = 0;
         String id = "";
         ArrayList<Integer> indexes = new ArrayList<>();
         printSearchResult();
         
-        // Displaying contacts, retrieving index and counting duplicates
+        // Retrieves index and counting duplicates
         for (int i = 0; i < addressBook.size(); i++) { 
-            if (lastName.equalsIgnoreCase(addressBook.get(i).getLastName())) { 
-                System.out.println(addressBook.get(i).toString());
+            if (lastName.equalsIgnoreCase(addressBook.get(i).getLastName())) {
                 index = i;
                 indexes.add(i);
                 count++;
             }
         }
         
-        // Actions taken when contact is not found and when duplicates are found 
-        if (count == 0) {
-            printContactNotFound();
-            openAddressBook();
-        }
-        else if (count > 1) {
-            promptID(); // Asking for ID when duplicates are found
-            // Checking whether ID is contained in arraylist indexes
-            id = controlID(promptID(), indexes); 
-            // Retrieving index from ID
-            for(int i = 0; i < addressBook.size(); i++) { 
-                if (id.equals(addressBook.get(i).getId())) { 
-                    index = i;
-                }
-            }
+        // Actions taken when contact is not found and when duplicates are found
+        switch (count) {
+            case 0:
+                printContactNotFound();
+                openAddressBook();
+                break;
+            case 1:
+                printHeader();
+                System.out.println(addressBook.get(indexes.size()).toString());
+                break;
+            default:
+                printHeader();
+                for (int i : indexes)
+                    System.out.println(addressBook.get(i).toString());
+                // Asks for ID when duplicates are found
+                // Checks whether ID is contained in arraylist indexes
+                id = controlID(promptID(), indexes);
+                // Retrieves index from ID
+                for(int i = 0; i < addressBook.size(); i++) {
+                    if (id.equals(addressBook.get(i).getId())) {
+                        index = i;
+                    }
+                }   break;
         }
               
-        // Modify details based on type
+        // Modifies details based on type
         printModifyDetails();
         if ("Acquaintance".equals(addressBook.get(index).getClass().
             getSimpleName())) {
@@ -543,18 +529,15 @@ abstract class AddressBook {
         }
     }
     
-    /**
-     * Removing contacts
-     * @param lastNameEntered, the last name entered to be removed by user
-     */
-    private static void removeContact(String lastNameEntered){
+    // Removes contacts
+    private void removeContact(String lastNameEntered){
         int index = -1;
         int i = 0;
         for(; i < addressBook.size(); i++){ 
             if(lastNameEntered.equals(addressBook.get(i).
                 getLastName())) { 
                 
-                // Storing to-be-removed contact for database updating
+                // Stores to-be-removed contact for database updating
                 ArrayList<Contact> removed = new ArrayList<>();
                 removed.add(addressBook.get(i));
                 
@@ -576,10 +559,12 @@ abstract class AddressBook {
     }
 
 // ------------------------------- HELPERS -------------------------------------    
-    // Prompting for common and nonmandatory details, that is, street number, 
-    // street number suffix, street name, street name suffix, postal code, city,
-    // and email address
-    private static String[] commonDetails() throws IOException {
+    /*
+     * Prompts for common and nonmandatory details, that is, street number, 
+     * street number suffix, street name, street name suffix, postal code, city,
+     * and email address
+     */
+    private String[] commonDetails() throws IOException {
         String streetNumber = "";
         String streetNumberSuffix = "";
         String streetName = "";
@@ -617,18 +602,19 @@ abstract class AddressBook {
         return commonDetails;
     }
     
-    // Checking whether objects contains digits only
-    private static boolean containsDigitsOnly(String text) {
+    // Checks whether objects contains digits only
+    private boolean containsDigitsOnly(String text) {
         try {
             Long.parseLong(text);
             return true;
         } catch (NumberFormatException ex) {
+            ex.printStackTrace();
             return false;
         }
     }
     
-    // Checking whether ID chosen by user is among those in the search result
-    private static String controlID(String id, ArrayList<Integer> indexes) 
+    // Checks whether ID chosen by user is among those in the search result
+    private String controlID(String id, ArrayList<Integer> indexes) 
         throws IOException {
         // Setting ID to contain digits only among specific ID's
         boolean incorrect = true;
@@ -645,27 +631,9 @@ abstract class AddressBook {
         return id;
     }
     
-    // Checking whether birthdate is valid 
-    private static boolean isDateValid(String date) {
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MM "
-                + "yyyy");
-            LocalDate.parse(date, formatter);
-            return true;
-        } catch (DateTimeParseException ex) {
-            return false;
-        }
-    }
-    
-    // Checking whether email address format is valid
-    private static boolean isEmailValid(String email) {
-        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-        return email.matches(regex);
-    }
-    
-    // Prompting for mandatory details, that is, first name, last name, and 
+    // Prompts for mandatory details, that is, first name, last name, and 
     // landline phone number
-    private static String[] mandatoryDetails() throws IOException {
+    private String[] mandatoryDetails() throws IOException {
         String firstName = promptFirstName();        
         String lastName = promptLastName();        
         String landlinePhone = promptLandlinePhone();        
@@ -673,8 +641,8 @@ abstract class AddressBook {
         return mandatoryDetails;
     }
     
-    // Checking whether one in eleven options is chosen
-    private static int restrictUpToEleven() throws IOException {
+    // Checks whether one in eleven options is chosen
+    private int restrictUpToEleven() throws IOException {
         String readString;
         int readInt = 0;
         boolean condition;
@@ -692,8 +660,8 @@ abstract class AddressBook {
         return readInt;
     }
     
-    // Checking whether one in four options is chosen
-    private static int restrictUpToFour() throws IOException {
+    // Checks whether one in four options is chosen
+    private int restrictUpToFour() throws IOException {
         String readString;
         int readInt = 0;
         boolean condition;
@@ -711,8 +679,8 @@ abstract class AddressBook {
         return readInt;
     }
     
-    // Checking whether one in ten options is chosen
-    private static int restrictUpToTen() throws IOException {
+    // Checks whether one in ten options is chosen
+    private int restrictUpToTen() throws IOException {
         String readString;
         int readInt = 0;
         boolean condition;
@@ -730,8 +698,8 @@ abstract class AddressBook {
         return readInt;
     }
    
-    // Checking whether one in three options is chosen
-    private static int restrictUpToThree() throws IOException {
+    // Checks whether one in three options is chosen
+    private int restrictUpToThree() throws IOException {
         String readString;
         int readInt = 0;
         boolean condition;
@@ -749,8 +717,8 @@ abstract class AddressBook {
         return readInt;
     }
     
-    // Checking whether one in twelve options is chosen
-    private static int restrictUpToTwelve() throws IOException {
+    // Checks whether one in twelve options is chosen
+    private int restrictUpToTwelve() throws IOException {
         String readString;
         int readInt = 0;
         boolean condition;
@@ -768,8 +736,8 @@ abstract class AddressBook {
         return readInt;
     }
     
-    // Checking whether one in two options is chosen
-    private static int restrictUpToTwo() throws IOException {        
+    // Checks whether one in two options is chosen
+    private int restrictUpToTwo() throws IOException {        
         String readString;
         int readInt = 0;
         boolean condition;
@@ -787,10 +755,10 @@ abstract class AddressBook {
         return readInt;
     }
     
-    // Sorting by contact type
-    private static void sortByContactType(){
+    // Sorts by contact type
+    private void sortByContactType(){
         Collections.sort(addressBook, (contact_1, contact_2) -> {
-            // Converting English type names to French type initials
+            // Converts English type names to French type initials
             // C for Connaissance (Acquaintance), F for Famille (Family), and A
             // for Ami (Friend)
             String type_1;
@@ -833,8 +801,8 @@ abstract class AddressBook {
         printSize();
     }
     
-    // Sorting by last name
-    private static void sortByLastName(){
+    // Sorts by last name
+    private void sortByLastName(){
         Collections.sort(addressBook, (contact_1, contact_2) -> 
         {
             int compared = contact_1.getLastName().compareTo(contact_2.
@@ -851,8 +819,8 @@ abstract class AddressBook {
         printSize(); 
     }
     
-    // Sorting by postal code
-    private static void sortByPostalCode(){
+    // Sorts by postal code
+    private void sortByPostalCode(){
         Collections.sort(addressBook, (contact_1, contact_2) ->
         {
             int compared = contact_1.getPostalCode().compareTo(contact_2.
@@ -870,7 +838,413 @@ abstract class AddressBook {
         printSize();
     }
     
+    // Puts space after every two digits in a phone number
+    private String spacePhone(String phone) { 
+        StringBuilder phoneEntered = new StringBuilder();
+        for (int i = 2; i <= phone.length(); i += 2) {
+            phoneEntered.append(phone.substring(i - 2, i - 1));
+            phoneEntered.append(phone.substring(i - 1, i));
+            phoneEntered.append(" ");
+        }
+        return phoneEntered.toString();
+    }
+    
+    // ------------------------------ CONSOLE INPUTS -------------------------------
+// ------------------------------ MODIFIERS (12) -------------------------------    
+    // Modifies birthdate
+    private void modifyBirthDate(int index) throws IOException {
+        System.out.println("MODIFIER LA DATE DE NAISSANCE :");
+        getAddressBook().get(index).setBirthdate(readString());
+    }
+    
+    // Modifies city name
+    private void modifyCity(int index) throws IOException {
+        System.out.println("MODIFIER LA VILLE :");
+        getAddressBook().get(index).setCity(readString());
+    }
+    
+    // Modifies email address
+    private void modifyEmail(int index) throws IOException {
+        System.out.println("MODIFIER L'E-MAIL :");
+        getAddressBook().get(index).setEmail(readString());
+    }
+    
+    // Modifies first name
+    private void modifyFirstName(int index) throws IOException {
+        System.out.println("MODIFIER LE PRENOM :");
+        getAddressBook().get(index).setFirstName(readString());
+    }
+    
+    // Modifies landline phone number
+    private void modifyLandlinePhone(int index) throws IOException {
+        System.out.println("MODIFIER LE NUMERO DE TELEPHONE FIXE (SANS LES "
+            + "ESPACES) :");
+        getAddressBook().get(index).setLandlinePhone(readString());
+    }
+    
+    // Modifies last name
+    private void modifyLastName(int index) throws IOException {
+        System.out.println("MODIFIER LE NOM :");
+        getAddressBook().get(index).setLastName(readString());
+    }
+    
+    // Modifies mobile phone number
+    private void modifyMobilePhone(int index) throws IOException {
+        System.out.println("MODIFIER LE NUMERO DE TELEPHONE MOBILE (SANS LES "
+            + "ESPACES) :");
+        getAddressBook().get(index).setMobilePhone(readString());
+    }
+    
+    // Modifies postal code
+    private void modifyPostalCode(int index) throws IOException {
+        System.out.println("MODIFIER LE CODE POSTAL :");
+        getAddressBook().get(index).setPostalCode(readString());
+    }
+    
+    // Modifies street number
+    private void modifyStreetNumber(int index) throws IOException {
+        System.out.println("MODIFIER LE NUMERO DE RUE :");
+        getAddressBook().get(index).setStreetNumber(readString());
+    }
+    
+    // Modifies street number suffix
+    private void modifyStreetNumberSuffix(int index) throws IOException {
+        System.out.println("MODIFIER LE COMPLEMENT DU NUMERO DE RUE :");
+        getAddressBook().get(index).setStreetNumberSuffix(readString());
+    }
+    
+    // Modifies street name
+    private void modifyStreetName(int index) throws IOException {
+        System.out.println("MODIFIER LE NOM DE RUE :");
+        getAddressBook().get(index).setStreetName(readString());
+    }
+    
+    // Modifies street name suffix
+    private void modifyStreetNameSuffix(int index) throws IOException {
+        System.out.println("MODIFIER LE COMPLEMENT DE RUE :");
+        getAddressBook().get(index).setStreetNameSuffix(
+            readString());
+    } 
+
+// ------------------------------- PRINTERS (31) -------------------------------
+    // Prints success message after adding an acquaintance
+    private void printAcquaintanceAdded() {
+        System.out.println(getAddressBook().get(
+            getAddressBook().size() - 1).getFullName().toUpperCase() + " A ETE "
+            + "AJOUTE.E AVEC SUCCES A LA FICHE \"CONNAISSANCE\"");
+    }
+    
+    // Prints success message after removing an acquaintance
+    private void printAcquaintanceRemoved(int index) {
+        System.out.println(getAddressBook().get(index).getFullName() + " A ETE "
+            + "SUPPRIME.E AVEC SUCCES DE LA FICHE \"CONNAISSANCE\"");
+    }
+    
+    // Prints contact details
+    private void printContact(int index) {
+        System.out.println(getAddressBook().get(index)); 
+    }
+    
+    // Prints contact not found message
+    private void printContactNotFound() {
+        System.out.println("CONTACT INTROUVABLE !");
+    }
+    
+    /*
+     * Prints "enter 1, 2, or 3" and one of three options to choose from: 
+     * sort by name, sort by postal code, or sort by contact type
+     */
+    private void printSortOptions() {
+        System.out.println("SAISIR 1, 2, OU 3 :");
+        System.out.println("1. TRIER PAR NOM  2. TRIER PAR CODE POSTAL\n"
+            + "3. TRIER PAR TYPE DE CONTACT");
+    }
+    
+    // Prints two options to choose from, nonempty details or empty details 
+    private void printEnterAdditionalDetails() {
+        System.out.println("SAISIR LES INFORMATIONS UNE A UNE PUIS APPUYER SUR "
+            + "\"ENTREE\" \n OU NE RIEN SAISIR ET APPUYER SUR \"ENTREE\"");
+    }
+    
+    // Prints "enter address"
+    private void printEnterAddress() {
+        System.out.println("SAISIR L'ADRESSE :");
+    }
+    
+    /*
+     * Prints one of two options to choose from: mandatory details only or all 
+     * details
+     */
+    private void printEnterFirstDetails() {
+        System.out.println("1. AJOUTER SEULEMENT UN PRENOM, UN NOM ET UN "
+            + "TELEPHONE FIXE \n2. AJOUTER D'AUTRES INFORMATIONS EN PLUS");
+    }
+    
+    // Prints "mandatory input" error message
+    private void printMandatoryInputErrorMessage() {
+        System.err.println("SAISIE OBLIGATOIRE !");
+    }
+    
+    // Prints error message
+    private void printErrorMessage() {
+        System.err.println("SAISIE ERRONEE ! REESSAYER :");
+    }
+    
+    // Prints "do you want to exit address book?"
+    private void printExitMessage() {
+        System.out.println("QUITTER LE CARNET D'ADRESSE ?");
+    }
+    
+    // Prints success message after adding a family
+    private void printFamilyAdded() {
+        System.out.println(getAddressBook().get(
+            getAddressBook().size() - 1).getFullName().toUpperCase() + " A ETE "
+            + "AJOUTE.E AVEC SUCCES A LA FICHE \"FAMILLE\"");
+    }
+    
+    // Prints success message after removing a family member
+    private void printFamilyRemoved(int index) {
+        System.out.println(getAddressBook().get(index).getFullName()+ " A ETE "
+            + "SUPPRIME.E AVEC SUCCES DE LA FICHE \"FAMILLE\"");
+    }
+    
+    // Prints success message after adding a friend
+    private void printFriendAdded() {
+        System.out.println(getAddressBook().get(
+            getAddressBook().size() - 1).getFullName().toUpperCase() + " A ETE "
+            + "AJOUTE.E AVEC SUCCES A LA FICHE \"AMI\"");
+    }
+    
+    // Prints success message after removing a friend
+    private void printFriendRemoved(int index) {
+        System.out.println(getAddressBook().get(index).getFullName()+ " A ETE "
+            + "SUPPRIME.E AVEC SUCCES DE LA FICHE \"AMI\"");
+    }
+    
+    // Prints header on address book's display  
+    private void printHeader() {
+        System.out.print(String.format("%-4s", "Type"));
+        System.out.print(" " + String.format(idMaxLength(), "ID"));
+        System.out.print(" " + String.format(firstNameMaxLength(), "PRENOM"));
+        System.out.print(" " + String.format(lastNameMaxLength(), "NOM"));
+        System.out.print(" " + String.format("%-7s", "CP"));
+        System.out.print(" " + String.format("%-14s", "FIXE"));
+        System.out.println(" " + String.format("%-14s", " MOBILE"));
+    }    
+    
+    // Prints Acquaintance details to modify
+    private void printModifyAcquaintance() {
+        System.out.println("SAISIR 1, 2, ..., OU 10 :");
+        System.out.println("1. MODIFIER LE PRENOM  2. MODIFIER LE NOM\n"
+            + "3. MODIFIER LE NUMERO DE RUE  4. MODIFIER LE COMPLEMENT DU "
+            + "NUMERO DE RUE\n"
+            + "5. MODIFIER LE NOM DE RUE  6. MODIFIER LE COMPLEMENT DE RUE\n"
+            + "7. MODIFIER LE CODE POSTAL  8. MODIFIER LA VILLE\n"
+            + "9. MODIFIER L'E-MAIL  10. MODIFIER LE NUMERO DE TELEPHONE FIXE"
+            + "\n");
+    }
+    
+    // Prints "modify address"
+    private void printModifyAddress() {
+        System.out.println("MODIFIER L'ADRESSE :");
+    }
+    
+    // Prints "do you want to modify details?"
+    private void printModifyDetails() {
+        System.out.println("MODIFIER DES INFORMATIONS ?");
+    }
+    
+    // Prints Family details to modify
+    private void printModifyFamily() {
+        System.out.println("SAISIR 1, 2, ..., OU 12 :");
+        System.out.println("1. MODIFIER LE PRENOM  2. MODIFIER LE NOM\n"
+            + "3. MODIFIER LA DATE DE NAISSANCE  4. MODIFIER LE NUMERO DE RUE\n"
+            + "5. MODIFIER LE COMPLEMENT DU NUMERO DE RUE  6. MODIFIER LE NOM "
+            + "DE RUE\n"
+            + "7. MODIFIER LE COMPLEMENT DE RUE  8. MODIFIER LE CODE POSTAL\n"
+            + "9. MODIFIER LA VILLE  10. MODIFIER L'E-MAIL\n"
+            + "11. MODIFIER LE NUMERO DE TELEPHONE FIXE  12. MODIFIER LE NUMERO"
+            + " DE TELEPHONE MOBILE");
+    }
+    
+    // Prints Friend details to modify
+    private void printModifyFriend() {
+        System.out.println("SAISIR 1, 2, ..., OU 11 :");
+        System.out.println("1. MODIFIER LE PRENOM  2. MODIFIER LE NOM\n"
+            + "3. MODIFIER LE NUMERO DE RUE  4. MODIFIER LE COMPLEMENT DU "
+            + "NUMERO DE RUE\n"
+            + "5. MODIFIER LE NOM DE RUE  6. MODIFIER LE COMPLEMENT DE RUE\n"
+            + "7. MODIFIER LE CODE POSTAL  8. MODIFIER LA VILLE\n"
+            + "9. MODIFIER L'E-MAIL  10. MODIFIER LE NUMERO DE TELEPHONE FIXE\n"
+            + "11. MODIFIER LE NUMERO DE TELEPHONE MOBILE");
+    }
+    
+    // Prints search result message
+    private void printSearchResult() {
+        System.out.println("RESULTAT DE LA RECHERCHE :");
+    }
+    
+    /*
+     * Prints "enter contact type" and one of three options to choose from: 
+     * acquaintance, family, or friend
+     */
+    private void printSelectContactType() {
+        System.out.println("SAISIR LE TYPE DE CONTACT, SOIT 1, 2, OU 3 :");
+        System.out.println("1. CONNAISSANCE  2. FAMILLE.  3. AMI");
+    }
+    
+    /*
+     * Prints "enter 1, ..., or 4" and one of four options to choose from:,
+     * add contact, find contact, remove contact, or display address book
+     */
+    private void printSelectUpToFour() {
+        System.out.println("SAISIR 1, 2, 3 OU 4 :");
+        System.out.println("1. AJOUTER UN CONTACT  2. RECHERCHER UN CONTACT  "
+            + "3. SUPPRIMER UN CONTACT \n4. AFFICHER LE CARNET D'ADRESSE");
+    }
+    
+    // Prints "enter 1 or 2"
+    private void printSelectUpToTwo() {
+        System.out.println("SAISIR 1 OU 2 :");
+    }
+    
+    // Prints address book size or number of contacts
+    private void printSize() {
+        System.out.println(getAddressBook().size() + " CONTACT.S.");
+    }
+    
+    // Prints "sorted by contact type"
+    private void printSortByContactType() {
+        System.out.println("TRI PAR TYPE DE CONTACT :");
+        System.out.println("A POUR AMI, C POUR CONNAISSANCE, ET F POUR "
+            + "FAMILLE");
+    }
+    
+    // Prints "sorted by last name"
+    private void printSortByLastName() {
+        System.out.println("TRI PAR NOM :");
+    }
+    
+    // Prints "sorted by postal code"
+    private void printSortByPostalCode() {
+        System.out.println("TRI PAR CODE POSTAL :");
+    }
+    
+    // Prints Welcome message
+    private void printWelcome() {
+        System.out.println(
+          "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        + "::::\n"
+        + "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        + "::::\n"
+        + "::::::::::::::::::::::::::::::: CARNET :::::::::::::::::::::::::::::"
+        + "::::\n"
+        + ":::::::::::::::::::::::::::::::::::: D'ADRESSE :::::::::::::::::::::"
+        + "::::\n"
+        + "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        + "::::\n"
+        + "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+        + "::::");
+    }
+    
+    // Prints yes and no options
+    private void printYesOrNo() {
+        System.out.println("1. OUI  2. NON");
+    }
+    
+// ----------------------------- PROMPTERS (13) --------------------------------
+    // Prompts for birthdate
+    private String promptBirthDate() throws IOException {
+        System.out.println("SAISIR LA DATE DE NAISSANCE AU FORMAT \"dd mm "
+            + "yyyy\" \nOU NE RIEN SAISIR AUTREMENT :");
+        return readString();
+    }
+    
+    // Prompts for city name
+    private String promptCity() throws IOException {
+        System.out.println("SAISIR LA VILLE :");
+        return readString();
+    }
+    
+    // Prompts for email address
+    private String promptEmail() throws IOException {
+        System.out.println("SAISIR L'ADRESSE E-MAIL :");
+        return readString();
+    }
+    
+    // Prompts for first name
+    private String promptFirstName() throws IOException {
+        System.out.println("SAISIR LE PRENOM :");
+        return readString();
+    }
+    
+    // Prompts for ID
+    private String promptID() throws IOException {
+        System.out.println("CONTACTS MULTIPLES. SAISIR UN DES NUMEROS D'ID "
+            + "AFFICHES POUR PLUS DE PRECISION :");
+        return readString();
+    }
+    
+    // Prompts for landline phone number
+    private String promptLandlinePhone() throws IOException {
+        System.out.println("SAISIR LE NUMERO DE TELEPHONE FIXE (LES DIX "
+            + "CHIFFRES SANS LES ESPACES) :");
+        return readString();
+    }
+    
+    // Prompts for last name
+    private String promptLastName() throws IOException {
+        System.out.println("SAISIR LE NOM :");
+        return readString();
+    }
+    
+    // Prompts for mobile phone number
+    private String promptMobilePhone() throws IOException {
+        System.out.println("SAISIR LE NUMERO DE TELEPHONE MOBILE (LES DIX "
+            + "CHIFFRES SANS LES ESPACES) :");
+        return readString();
+    }
+    
+    // Prompts for postal code
+    private String promptPostalCode() throws IOException {
+        System.out.println("SAISIR LE CODE POSTAL :");
+        return readString();
+    }
+    
+    // Prompts for street name
+    private String promptStreetName() throws IOException {
+        System.out.println("SAISIR LE NOM DE RUE :");
+        return readString();
+    }
+    
+    // Prompts for street name suffix
+    private String promptStreetNameSuffix() throws IOException {
+        System.out.println("SAISIR LE COMPLEMENT D'ADRESSE S'IL EXISTE :");
+        return readString();
+    }
+    
+    // Prompts for street number
+    private String promptStreetNumber() throws IOException {
+        System.out.println("SAISIR LE NUMERO DE RUE :");
+        return readString();
+    }
+    
+    // Prompts for street number suffix
+    private String promptStreetNumberSuffix() throws IOException {
+        System.out.println("SAISIR LE COMPLEMENT DU NUMERO DE RUE S'IL EXISTE :"
+            + "");
+        return readString();
+    }
+
+// -------------------------------- READER (1)----------------------------------
+    // Reads a string from standard input
+    private String readString() throws IOException {
+        BufferedReader bufferedReader;
+        bufferedReader = new BufferedReader(new InputStreamReader(System.in));         
+        return bufferedReader.readLine().trim();
+    }
+    
 // ---------------------------- FIELD (1) --------------------------------------
     // Class Field
-    private static final ArrayList<Contact> addressBook = new ArrayList<>();
+    private final ArrayList<Contact> addressBook = new ArrayList<>();
 }

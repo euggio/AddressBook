@@ -1,10 +1,5 @@
-/*
- * CDA AFPA 2020 B.E.E.
- * No Rights Reserved
- */
 package address_book;
 
-import static address_book.AddressBook.*;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -12,9 +7,9 @@ import java.util.Objects;
  * CONTACT CLASS
  * Used as superclass for the Acquaintance class, the Family class, and the 
  * Friend class.
- * The first name and the last name, as well as the landline phone, are 
- * mandatory informations for a contact.
- * Postal codes, as well as phone numbers are implemented as French objects
+ * First name and last name, as well as landline phone, are mandatory 
+ * informations for a contact.
+ * Postal codes, as well as phone numbers are based on French format
  * @author euggio
  */
 class Contact {
@@ -22,7 +17,7 @@ class Contact {
     /**
      * This constructor takes as parameters variables corresponding to all 
      * instance fields, except for the birthdate, mobile phone, and id fields.
-     * It works as a base constructor reserved for the Acquaintance subclass
+     * It works as a base constructor for the Acquaintance subclass
      * @param firstName, a first name 
      * @param lastName, a last name 
      * @param streetNumber, a street number 
@@ -39,12 +34,11 @@ class Contact {
     Contact(String firstName, String lastName, String streetNumber, 
         String streetNumberSuffix, String streetName, String streetNameSuffix, 
         String postalCode, String city, String email, String landlinePhone) 
-            throws IOException { 
-                
-        this.firstName = controlMandatoryFirstName(firstName);
-        this.lastName = controlMandatoryLastName(lastName);        
+            throws IOException {     
+        this.firstName = new AddressBook().setFirstNameAsMandatory(firstName);
+        this.lastName = new AddressBook().setLastNameAsMandatory(lastName);        
         this.birthdate = "N/A"; // Not Applicable as to the Acquaintance class
-        this.streetNumber = controlStreetNumber(streetNumber);
+        this.streetNumber = new AddressBook().checkStreetNumber(streetNumber);
 
         if ("".equals(streetNumberSuffix) || streetNumberSuffix == null) this.
             streetNumberSuffix = "INCONNU";
@@ -58,20 +52,21 @@ class Contact {
             streetNameSuffix = "INCONNU";
         else this.streetNameSuffix = streetNameSuffix;
         
-        this.postalCode = controlPostalCode(postalCode);
+        this.postalCode = new AddressBook().checkPostalCode(postalCode);
 
         if ("".equals(city) || city == null) this.city = "INCONNUE";
         else this.city = city;
         
-        this.email = controlEmail(email);
-        this.landlinePhone = controlMandatoryLandlinePhone(landlinePhone);
+        this.email = new AddressBook().checkEmail(email);
+        this.landlinePhone = new AddressBook().setLandlinePhoneAsMandatory(
+            landlinePhone);
         this.mobilePhone = "N/A"; // Not Applicable as to the Acquaintance class
     }
     
     /**
      * This constructor takes as parameters variables corresponding to all 
      * instance fields, except for the birthdate and id fields.
-     * It works as a base constructor reserved for the Friend subclass
+     * It works as a base constructor for the Friend subclass
      * @param firstName, a first name 
      * @param lastName, a last name 
      * @param streetNumber, a street number 
@@ -94,10 +89,10 @@ class Contact {
         /// Empty strings and nulls are translated to INCONNUE, except for 
         // mandatory details, such as first names, last names, and landline 
         // phone numbers
-        this.firstName = controlMandatoryFirstName(firstName);
-        this.lastName = controlMandatoryLastName(lastName);
+        this.firstName = new AddressBook().setFirstNameAsMandatory(firstName);
+        this.lastName = new AddressBook().setLastNameAsMandatory(lastName);
         this.birthdate = "N/A"; // Not Applicable as to the Friend subclass
-        this.streetNumber = controlStreetNumber(streetNumber);
+        this.streetNumber = new AddressBook().checkStreetNumber(streetNumber);
 
         if ("".equals(streetNumberSuffix) || streetNumberSuffix == null) this.
             streetNumberSuffix = "INCONNU";
@@ -111,20 +106,20 @@ class Contact {
             streetNameSuffix = "INCONNU";
         else this.streetNameSuffix = streetNameSuffix;
         
-        this.postalCode = controlPostalCode(postalCode);
+        this.postalCode = new AddressBook().checkPostalCode(postalCode);
 
         if ("".equals(city) || city == null) this.city = "INCONNUE";
         else this.city = city;
 
-        this.email = controlEmail(email);
-        this.landlinePhone = controlMandatoryLandlinePhone(landlinePhone);
-        this.mobilePhone = controlMobilePhone(mobilePhone);     
+        this.email = new AddressBook().checkEmail(email);
+        this.landlinePhone = new AddressBook().setLandlinePhoneAsMandatory(landlinePhone);
+        this.mobilePhone = new AddressBook().checkMobilePhone(mobilePhone);     
     }
     
     /**
      * This constructor takes as parameters variables corresponding to all 
      * instance fields, except for the id field.
-     * It works as a base constructor reserved for the Family subclass
+     * It works as a base constructor for the Family subclass
      * @param firstName, a first name 
      * @param lastName, a last name 
      * @param birthdate, a birthdate
@@ -148,10 +143,10 @@ class Contact {
         // Empty strings and nulls are translated to Unknown, except for 
         // mandatory details, such as first names, last names, and landline 
         // phone numbers
-        this.firstName = controlMandatoryFirstName(firstName);
-        this.lastName = controlMandatoryLastName(lastName);
-        this.birthdate = controlBirthdate(birthdate);
-        this.streetNumber = controlStreetNumber(streetNumber);
+        this.firstName = new AddressBook().setFirstNameAsMandatory(firstName);
+        this.lastName = new AddressBook().setLastNameAsMandatory(lastName);
+        this.birthdate = new AddressBook().checkBirthdate(birthdate);
+        this.streetNumber = new AddressBook().checkStreetNumber(streetNumber);
 
         if ("".equals(streetNumberSuffix) || streetNumberSuffix == null) this.
             streetNumberSuffix = "INCONNU";
@@ -165,14 +160,14 @@ class Contact {
             streetNameSuffix = "INCONNU";
         else this.streetNameSuffix = streetNameSuffix;
         
-        this.postalCode = controlPostalCode(postalCode);
+        this.postalCode = new AddressBook().checkPostalCode(postalCode);
 
         if ("".equals(city) || city == null) this.city = "INCONNUE";
         else this.city = city;
 
-        this.email = controlEmail(email);
-        this.landlinePhone = controlMandatoryLandlinePhone(landlinePhone);
-        this.mobilePhone = controlMobilePhone(mobilePhone);     
+        this.email = new AddressBook().checkEmail(email);
+        this.landlinePhone = new AddressBook().setLandlinePhoneAsMandatory(landlinePhone);
+        this.mobilePhone = new AddressBook().checkMobilePhone(mobilePhone);     
     } 
     
 // ---------------------------- OVERRIDES (3) ----------------------------------
@@ -190,9 +185,12 @@ class Contact {
         else format = "A";
         
         return  String.format("%-4s", format)
-            + " " + String.format(idLength(), Integer.toString(id))
-            + " " + String.format(firstNameLength(), firstName)
-            + " " + String.format(lastNameLength(), lastName)
+            + " " + String.format(new AddressBook().idMaxLength(), Integer.
+            toString(id))
+            + " " + String.format(new AddressBook().firstNameMaxLength(), 
+            firstName)
+            + " " + String.format(new AddressBook().lastNameMaxLength(), 
+            lastName)
             + " " + String.format("%-7s", postalCode)
             + " " + String.format("%-10s", landlinePhone)
             + " " + String.format("%-10s", mobilePhone);
@@ -342,8 +340,8 @@ class Contact {
     }
 
     /**
-     * Getting an controlEmail address
-     * @return the controlEmail address
+     * Getting an checkEmail address
+     * @return the checkEmail address
      */
     String getEmail() {
         return email;
@@ -371,7 +369,7 @@ class Contact {
      * @param firstName, a first name
      */
     void setFirstName(String firstName) throws IOException {
-        this.firstName = controlMandatoryFirstName(firstName);
+        this.firstName = new AddressBook().setFirstNameAsMandatory(firstName);
     }
     
     /**
@@ -379,7 +377,7 @@ class Contact {
      * @param lastName, a last name 
      */
     void setLastName(String lastName) throws IOException {
-        this.lastName = controlMandatoryLastName(lastName);
+        this.lastName = new AddressBook().setLastNameAsMandatory(lastName);
     }
 
     /**
@@ -388,7 +386,7 @@ class Contact {
      * @throws java.io.IOException
      */
     void setBirthdate(String birthdate) throws IOException {
-        this.birthdate = controlBirthdate(birthdate);
+        this.birthdate = new AddressBook().checkBirthdate(birthdate);
     }
     
     /**
@@ -397,7 +395,7 @@ class Contact {
      * @throws java.io.IOException 
      */
     void setStreetNumber(String streetNumber) throws IOException {
-        this.streetNumber = controlStreetNumber(streetNumber);
+        this.streetNumber = new AddressBook().checkStreetNumber(streetNumber);
     }
     
     /**
@@ -439,7 +437,7 @@ class Contact {
      * @throws java.io.IOException 
      */
     void setPostalCode(String postalCode) throws IOException {
-        this.postalCode = controlPostalCode(postalCode);
+        this.postalCode = new AddressBook().checkPostalCode(postalCode);
     }
 
     /**
@@ -458,7 +456,7 @@ class Contact {
      * @throws java.io.IOException 
      */
     void setEmail(String email) throws IOException {
-        this.email = controlEmail(email);
+        this.email = new AddressBook().checkEmail(email);
     }
 
     /**
@@ -467,7 +465,7 @@ class Contact {
      * @throws java.io.IOException 
      */
     void setLandlinePhone(String landlinePhone) throws IOException {
-        this.landlinePhone = controlMandatoryLandlinePhone(landlinePhone);
+        this.landlinePhone = new AddressBook().setLandlinePhoneAsMandatory(landlinePhone);
     }       
     
     /**
@@ -476,7 +474,7 @@ class Contact {
      * @throws java.io.IOException 
      */
     void setMobilePhone(String mobilePhone) throws IOException {
-        this.mobilePhone = controlMobilePhone(mobilePhone);
+        this.mobilePhone = new AddressBook().checkMobilePhone(mobilePhone);
     }
     
 // ---------------------------- FIELDS (12) ------------------------------------

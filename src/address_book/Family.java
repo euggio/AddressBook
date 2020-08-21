@@ -1,7 +1,3 @@
-/*
- * CDA AFPA 2020 B.E.E.
- * No Rights Reserved
- */
 package address_book;
 
 import java.io.IOException;
