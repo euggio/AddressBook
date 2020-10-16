@@ -6,6 +6,13 @@
 <p>Contacts' details can be modified once a search has been initiated. On display, contacts can be sorted by last name, by postal code, and also by contact type.</p>   
 <p>The address book uses simple Java code and object-oriented programming, inheritance, interface, exception, generic programming, and collections framework in their very basic level.</p>  
 
+## Branch
+<p><a href="https://github.com/euggio/AddressBook"><i>master</i></a> -- The default branch is stabilized and might be updated with new features.</p>
+
+## Tech
+<p>It is quite a simplistic project that has used the <b>NetBeans</b> 8.0.2 IDE, <b>JDK 1.8</b>, and Java <b>Swing</b>, along with <b>Microsoft SQL Server</b> and <b>JDBC 7.2.1</b> for the database connection.</p>
+
+## Display
 *Gif showing an aperçu of the application's mechanism:*
 
 ![20200813_193808](https://user-images.githubusercontent.com/59257795/90167987-c4866480-dd9c-11ea-932d-d266705bc301.gif)
