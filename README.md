@@ -9,9 +9,6 @@
 ## Branch
 <p><a href="https://github.com/euggio/AddressBook"><i>master</i></a> -- The default branch is stabilized and might be updated with new features.</p>
 
-## Tech
-<p>It is quite a simplistic project that has used the <b>NetBeans</b> 8.0.2 IDE, <b>JDK 1.8</b>, and Java <b>Swing</b>, along with <b>Microsoft SQL Server</b> and <b>JDBC 7.2.1</b> for the database connection.</p>
-
 ## Display
 *Gif showing an aperçu of the application's mechanism:*
 
